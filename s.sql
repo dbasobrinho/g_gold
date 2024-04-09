@@ -1,7 +1,7 @@
 -- |
 -- +-------------------------------------------------------------------------------------------+
 -- | Objetivo   : Sessoes Ativas                                                               |
--- | Criado por : Roberto Fernandes Sobrinho                                                   |
+-- | Criador    : Roberto Fernandes Sobrinho                                                   |
 -- | Data       : 15/12/2015                                                                   |
 -- | Exemplo    : @s.sql                                                                       |
 -- | Arquivo    : s.sql                                                                        |
@@ -16,11 +16,13 @@ SELECT rpad(sys_context('USERENV', 'INSTANCE_NAME'), 17) current_instance FROM d
 SET TERMOUT ON;
 PROMPT
 PROMPT +-------------------------------------------------------------------------------------------+
+PROMPT | https://github.com/dbasobrinho/g_gold/blob/main/s.sql                                     |
+PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT | Script   : Sessoes Ativas                                        +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT | Instancia: &current_instance                                     |d|b|a|s|o|b|r|i|n|h|o|  |
 PROMPT | Versao   : 2.2                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT +-------------------------------------------------------------------------------------------+
-PROMPT | dbasobrinho.com.br
+PROMPT |                                                               https://dbasobrinho.com.br  |
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT
 SET ECHO        OFF
