@@ -3,7 +3,7 @@
 -- | Objetivo   : Sessoes Ativas                                                               |
 -- | Criador    : Roberto Fernandes Sobrinho                                                   |
 -- | Data       : 15/12/2015                                                                   |
--- | Exemplo    : @s.sql                                                                       |
+-- | Exemplo    : @s.sql                                                                       | 
 -- | Arquivo    : s.sql                                                                        |
 -- | Modificacao: 2.1 - 03/08/2019 - rfsobrinho - Vizulizar MODULE no USERNAME                 |
 -- |              2.2 - 24/02/2021 - rfsobrinho - Ver POOL conexao e CHILD                     |
