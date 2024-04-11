@@ -8,6 +8,8 @@
 -- | Modificacao: 2.1 - 03/08/2019 - rfsobrinho - Vizulizar MODULE no USERNAME                 |
 -- |              2.2 - 24/02/2021 - rfsobrinho - Ver POOL conexao e CHILD                     |
 -- +-------------------------------------------------------------------------------------------+
+-- |                                                                https://dbasobrinho.com.br |
+-- +-------------------------------------------------------------------------------------------+
 -- |
 SET TERMOUT OFF;
 ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-YY hh24:mi:ss';
@@ -21,8 +23,6 @@ PROMPT +------------------------------------------------------------------------
 PROMPT | Script   : Sessoes Ativas                                        +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT | Instancia: &current_instance                                     |d|b|a|s|o|b|r|i|n|h|o|  |
 PROMPT | Versao   : 2.2                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
-PROMPT +-------------------------------------------------------------------------------------------+
-PROMPT |                                                               https://dbasobrinho.com.br  |
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT
 SET ECHO        OFF
