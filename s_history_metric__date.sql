@@ -5,7 +5,7 @@
 -- | Data       : 11/04/2024                                                                   |
 -- | Exemplo    : @s_history_metric__date.sql                                                  |
 -- | Parametros : <01*> Data Inicial (DD/MM/YYYY HH24:MI) = 10/04/2024 10:00                   |
--- |			  <02*> Data Final   (DD/MM/YYYY HH24:MI) = 10/04/2024 12:00                   |
+-- |			  <02*> Data Final   (DD/MM/YYYY HH24:MI) = 10/04/2024 12:00                   | 
 -- | Arquivo    : s_history_metric__date.sql                                                   |
 -- | Modificacao: 2.1 - 03/08/2019 - rfsobrinho - Vizulizar MODULE no USERNAME                 |
 -- |              2.2 - 24/02/2021 - rfsobrinho - Ver POOL conexao e CHILD                     |
