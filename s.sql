@@ -3,16 +3,19 @@
 -- | Objetivo   : Sessoes Ativas                                                               |
 -- | Criador    : Roberto Fernandes Sobrinho                                                   |
 -- | Data       : 15/12/2015                                                                   |
--- | Exemplo    : @s.sql                                                                       | 
+-- | Exemplo    : @s.sql                                                                       |  
 -- | Arquivo    : s.sql                                                                        |
+-- | Referncia  :                                                                              |
 -- | Modificacao: 2.1 - 03/08/2019 - rfsobrinho - Vizulizar MODULE no USERNAME                 |
 -- |              2.2 - 24/02/2021 - rfsobrinho - Ver POOL conexao e CHILD                     |
 -- +-------------------------------------------------------------------------------------------+
 -- |                                                                https://dbasobrinho.com.br |
 -- +-------------------------------------------------------------------------------------------+
--- |
+-- |"O Guina não tinha dó, se ragir, BUMMM! vira pó!"
+-- +-------------------------------------------------------------------------------------------+
 SET TERMOUT OFF;
-ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-YY hh24:mi:ss';
+ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-YY HH24:MI:SS';
+EXEC dbms_application_info.set_module( module_name => 's[s.sql]', action_name =>  's[s.sql]');
 COLUMN current_instance NEW_VALUE current_instance NOPRINT;
 SELECT rpad(sys_context('USERENV', 'INSTANCE_NAME'), 17) current_instance FROM dual;
 SET TERMOUT ON;
