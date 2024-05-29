@@ -1,0 +1,42 @@
+SQL> @dg
+
++-------------------------------------------------------------------------------------------+
+| https://github.com/dbasobrinho/g_gold/blob/main/dg.sql                                    |
++-------------------------------------------------------------------------------------------+
+| Script   : GAP Replicacao Data Guard                             +-+-+-+-+-+-+-+-+-+-+-+  |
+| Instancia: ginaprd5                                              |d|b|a|s|o|b|r|i|n|h|o|  | 
+| Versao   : 2.2                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
++-------------------------------------------------------------------------------------------+
+| DG_CONF  : dg_config=(ginaprd,gina_stby,gina_app)
++-------------------------------------------------------------------------------------------+
+.
+.
++-------------------------------------------------------------------------------------------+
+| Status FUZZY Datafiles
++-------------------------------------------------------------------------------------------+
+
+STATUS |CHECKPOINT_CHANGE                       |CHECKPOINT_TIME     |       CNT|fuzzy
+-------|----------------------------------------|--------------------|----------|------
+ONLINE |38176504064762                          |29-may-2024 16:51:47|      1020|YES
+.
+.
++-------------------------------------------------------------------------------------------+
+| Data Guard GAP Status
++-------------------------------------------------------------------------------------------+
+
+ST |    DATABASE    |        MODO        |   SWITCHOVER   |        NAME        |THREAD|ULTIMO ARC|ULTIMO ARC|    ULTIMA DATA    |  DIF  |  DIF
+   |     PERFIL     |      PROTECAO      |     STATUS     |    DESTINATION     |      |  ORIGEM  | DESTINO  |      DESTINO      |  MIN  |  ARC
+---|----------------|--------------------|----------------|--------------------|------|----------|----------|-------------------|-------|-------
+:) |PRIMARY         |MAXIMUM PERFORMANCE |SESSIONS ACTIVE |2 - gina_stby       |     1|     38872|     38872|29/05/2024 16:51:47|     14|      0
+:) |PRIMARY         |MAXIMUM PERFORMANCE |SESSIONS ACTIVE |2 - gina_stby       |     2|     42270|     42270|29/05/2024 16:51:49|     14|      0
+:) |PRIMARY         |MAXIMUM PERFORMANCE |SESSIONS ACTIVE |2 - gina_stby       |     3|     41801|     41801|29/05/2024 16:51:52|     14|      0
+:) |PRIMARY         |MAXIMUM PERFORMANCE |SESSIONS ACTIVE |2 - gina_stby       |     4|     42742|     42741|29/05/2024 16:45:40|     20|      1
+:) |PRIMARY         |MAXIMUM PERFORMANCE |SESSIONS ACTIVE |2 - gina_stby       |     5|     42118|     42118|29/05/2024 16:51:51|     14|      0
+:) |PRIMARY         |MAXIMUM PERFORMANCE |SESSIONS ACTIVE |3 - gina_app        |     1|     38872|     38872|29/05/2024 16:51:47|     14|      0
+:) |PRIMARY         |MAXIMUM PERFORMANCE |SESSIONS ACTIVE |3 - gina_app        |     2|     42270|     42270|29/05/2024 16:51:49|     14|      0
+:) |PRIMARY         |MAXIMUM PERFORMANCE |SESSIONS ACTIVE |3 - gina_app        |     3|     41801|     41801|29/05/2024 16:51:52|     14|      0
+:) |PRIMARY         |MAXIMUM PERFORMANCE |SESSIONS ACTIVE |3 - gina_app        |     4|     42742|     42741|29/05/2024 16:45:40|     20|      1
+:) |PRIMARY         |MAXIMUM PERFORMANCE |SESSIONS ACTIVE |3 - gina_app        |     5|     42118|     42118|29/05/2024 16:51:51|     14|      0
+.
+.
+SQL>
