@@ -1,17 +1,16 @@
 -- |
 -- +-------------------------------------------------------------------------------------------+
--- | Objetivo   : Sessoes Ativas                                                               |
+-- | Objetivo   : GAP Replicacao Data Guard                                                    |
 -- | Criador    : Roberto Fernandes Sobrinho                                                   |
--- | Data       : 15/12/2015                                                                   |
--- | Exemplo    : @s.sql                                                                       |  
--- | Arquivo    : s.sql                                                                        |
+-- | Data       : 30/05/2024                                                                   |
+-- | Exemplo    : @dg.sql                                                                      |  
+-- | Arquivo    : dg.sql                                                                       |
 -- | Referncia  :                                                                              | 
--- | Modificacao: 2.1 - 03/08/2019 - rfsobrinho - Vizulizar MODULE no USERNAME                 |
--- |              2.2 - 24/02/2021 - rfsobrinho - Ver POOL conexao e CHILD                     |
+-- | Modificacao:                                                                              |
 -- +-------------------------------------------------------------------------------------------+
 -- |                                                                https://dbasobrinho.com.br |
 -- +-------------------------------------------------------------------------------------------+
--- |"O Guina não tinha dó, se ragir, BUMMM! vira pó!"
+-- |Peppa Pig diz: "Eu adoro pular em poças de Lama"
 -- +-------------------------------------------------------------------------------------------+
 SET TERMOUT OFF;
 ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-YY HH24:MI:SS';
@@ -27,7 +26,7 @@ PROMPT | https://github.com/dbasobrinho/g_gold/blob/main/dg.sql                 
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT | Script   : GAP Replicacao Data Guard                             +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT | Instancia: &current_instance                                     |d|b|a|s|o|b|r|i|n|h|o|  |
-PROMPT | Versao   : 2.2                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
+PROMPT | Versao   : 1.0                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT | DG_CONF  : &DG_CONF
 PROMPT +-------------------------------------------------------------------------------------------+
@@ -86,7 +85,7 @@ select  case when ARC_DIFF <= 3 then ':)'  when ARC_DIFF > 3 AND ARC_DIFF <=8  t
 ,  z.DATABASE_ROLE, z.PROTECTION_MODE, z.SWITCHOVER_STATUS, z.name, z.thread, z.STANDBY_LAST_RECEIVED
 ,  z.STANDBY_LAST_APPLIED, z.STANDBY_DT_LAST_APP, /*z.data_atual,*/ z.MINUTOS, z.ARC_DIFF
 from (
-SELECT /*+ PARALLEL(8) */ 
+SELECT /*+ PARALLEL(8) */   
        c.DATABASE_ROLE,
        c.PROTECTION_MODE,
        C.SWITCHOVER_STATUS,
