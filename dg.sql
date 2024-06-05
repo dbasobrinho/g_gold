@@ -6,7 +6,7 @@
 -- | Exemplo    : @dg.sql                                                                      |
 -- | Arquivo    : dg.sql                                                                       |
 -- | Referncia  :                                                                              |
--- | Modificacao: 1.1 - dbasobirnho - Ajustinho de nada, incluido o MAX                        |
+-- | Modificacao: 1.1 - DBASobrinho - Ajustinho de nada, incluido o MAX                        |
 -- +-------------------------------------------------------------------------------------------+
 -- |                                                                https://dbasobrinho.com.br |
 -- +-------------------------------------------------------------------------------------------+
