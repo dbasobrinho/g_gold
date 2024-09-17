@@ -8,6 +8,7 @@
 -- | Referncia  :                                                                              |
 -- | Modificacao: 2.1 - 03/08/2019 - rfsobrinho - Vizulizar MODULE no USERNAME                 |
 -- |              2.2 - 24/02/2021 - rfsobrinho - Ver POOL conexao e CHILD                     |
+-- |              2.3 - 17/09/2023 - rfsobrinho - novo machine                                 |
 -- +-------------------------------------------------------------------------------------------+
 -- |                                                                https://dbasobrinho.com.br |
 -- +-------------------------------------------------------------------------------------------+
@@ -25,7 +26,7 @@ PROMPT | https://github.com/dbasobrinho/g_gold/blob/main/s.sql                  
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT | Script   : Sessoes Ativas                                        +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT | Instancia: &current_instance                                     |d|b|a|s|o|b|r|i|n|h|o|  |
-PROMPT | Versao   : 2.2                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
+PROMPT | Versao   : 2.3                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT
 SET ECHO        OFF
@@ -69,7 +70,7 @@ select  s.sid || ',' || s.serial#|| case when s.inst_id is not null then ',@' ||
 ,    substr(s.osuser,1,10)   as osuser
 --,    substr(s.program,1,10)  as program
 ,    case when instr(s.program,'(J0') > 0  then substr(s.program,instr(s.program,'(J0'),10)||'-JOB' else substr(s.program,1,10) end  as program
-,    substr(s.machine,1,19)  as machine
+,    substr(s.machine, NVL(INSTR(s.machine, '\')+1, 1),19) as machine --'
 ,    to_char(s.logon_time,'ddmm:hh24mi')||
      case when to_number(to_char((sysdate-nvl(s.last_call_et,0)/86400),'yyyymmddhh24miss'))-to_number(to_char(s.logon_time,'yyyymmddhh24miss')) > 60 then '[P]' ELSE '[NP]' END as logon_time
 ,        to_char(s.last_call_et)              as call_et
