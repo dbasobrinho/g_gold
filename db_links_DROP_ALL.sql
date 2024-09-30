@@ -1,6 +1,6 @@
 -- |
 -- +-------------------------------------------------------------------------------------------+
--- | Objetivo   : Sessoes Ativas                                                               |
+-- | Objetivo   : Remover Todos os DBLinks                                                     |
 -- | Criador    : Roberto Fernandes Sobrinho                                                   |
 -- | Data       : 10/08/2022                                                                   |
 -- | Exemplo    : @db_links_DROP_ALL.sql                                                       |  
@@ -28,19 +28,6 @@ PROMPT | Instancia: &current_instance                                     |d|b|a
 PROMPT | Versao   : 1.0                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT
-
-COLUMN db_name NEW_VALUE db_name NOPRINT;
-SELECT name AS db_name FROM v$database;
-PROMPT Nome do Banco de Dados: &db_name
-ACCEPT proceed CHAR PROMPT 'Tem certeza que deseja continuar com a exclusão de TODOS os DBLinks neste banco de dados (&db_name)? (S/N): ';
-BEGIN
-  IF UPPER('&proceed') <> 'S' THEN
-    dbms_output.put_line('Operação cancelada pelo usuário. Nenhuma ação foi realizada.');
-    RAISE_APPLICATION_ERROR(-20001, 'Script abortado pelo usuário.');
-  END IF;
-END;
-/
-
 SET ECHO        OFF
 SET FEEDBACK    10
 SET HEADING     ON
@@ -51,27 +38,42 @@ SET TIMING      OFF
 SET TRIMOUT     ON
 SET TRIMSPOOL   ON
 SET VERIFY      OFF
+UNDEFINE db_name
+UNDEFINE proceed
+
+COLUMN db_name NEW_VALUE db_name NOPRINT;
+SELECT name AS db_name FROM v$database;
+
+PROMPT Nome do Banco de Dados: &db_name
+ACCEPT proceed CHAR PROMPT 'Para continuar e excluir TODOS os DBLinks, digite exatamente "dual": ';
+
+WHENEVER SQLERROR EXIT SQL.SQLCODE;
+WHENEVER OSERROR EXIT;
+BEGIN
+  IF nvl(LOWER(TRIM('&proceed')),'guina') != 'dual' THEN
+    dbms_output.put_line('Operação cancelada pelo usuário. Nenhuma ação foi realizada.');
+    RAISE_APPLICATION_ERROR(-20001, 'Script abortado pelo usuário.');
+  END IF;
+END;
+/
 COLUMN db_link FORMAT A30
 COLUMN host FORMAT A60
 COLUMN owner FORMAT A12
 COLUMN username FORMAT A22
-
 PROMPT
 PROMPT +-------------------------------------------------------------------------------------------+
-PROMPT | Exibindo todos os DBLinks antes da exclusão                                               |
+PROMPT | Exibindo todos os DBLinks antes da exclusão                                            
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT
-
 SELECT owner, db_link, username, host
 FROM   dba_db_links
 ORDER BY owner, db_link;
 
 PROMPT
 PROMPT +-------------------------------------------------------------------------------------------+
-PROMPT | Realizando exclusão de TODOS os DBLinks                                                   |
+PROMPT | Realizando exclusão de TODOS os DBLinks                                                  
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT
-
 SET SERVEROUTPUT ON
 DECLARE
   vv_sql CLOB :=
@@ -85,14 +87,14 @@ DECLARE
     END;';
   vv_sql1 clob;  
 BEGIN
-  FOR i IN (SELECT db_link FROM dba_db_links WHERE owner = 'PUBLIC') LOOP
+  FOR i IN (SELECT db_link FROM dba_db_links WHERE owner = 'PUBLIC' AND 1=1) LOOP
      EXECUTE IMMEDIATE 'DROP PUBLIC DATABASE LINK ' || i.db_link;
   END LOOP;
 
   FOR i in (SELECT DISTINCT owner 
              FROM dba_objects
             WHERE object_type='DATABASE LINK'
-              AND owner IN (SELECT USERNAME FROM DBA_USERS))
+              AND owner IN (SELECT USERNAME FROM DBA_USERS) AND 1=1)
   LOOP
     vv_sql1 := REPLACE(vv_sql, '##USU##', i.owner);
     dbms_output.put_line('Excluindo DBLinks do usuario: ' || i.owner);
@@ -107,10 +109,13 @@ END;
 
 PROMPT
 PROMPT +-------------------------------------------------------------------------------------------+
-PROMPT | Exibindo todos os DBLinks após a exclusão                                                 |
+PROMPT | Exibindo todos os DBLinks após a exclusão                                              
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT
 
 SELECT owner, db_link, username, host
 FROM   dba_db_links
 ORDER BY owner, db_link;
+
+UNDEFINE db_name
+UNDEFINE proceed
