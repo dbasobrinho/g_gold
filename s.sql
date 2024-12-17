@@ -7,8 +7,9 @@
 -- | Arquivo    : s.sql                                                                        |
 -- | Referncia  :                                                                              |
 -- | Modificacao: 2.1 - 03/08/2019 - rfsobrinho - Vizulizar MODULE no USERNAME                 |
--- |              2.2 - 24/02/2021 - rfsobrinho - Ver POOL conexao e CHILD                     |
+-- |              2.2 - 24/02/2021 - rfsobrinho - Ver POOL conexao e CHILD                     |  
 -- |              2.3 - 17/09/2023 - rfsobrinho - novo machine                                 |
+-- |              2.4 - 17/12/2023 - rfsobrinho - Incluido o TOP SQL ATIVO:                    |
 -- +-------------------------------------------------------------------------------------------+
 -- |                                                                https://dbasobrinho.com.br |
 -- +-------------------------------------------------------------------------------------------+
@@ -26,9 +27,42 @@ PROMPT | https://github.com/dbasobrinho/g_gold/blob/main/s.sql                  
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT | Script   : Sessoes Ativas                                        +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT | Instancia: &current_instance                                     |d|b|a|s|o|b|r|i|n|h|o|  |
-PROMPT | Versao   : 2.3                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
+PROMPT | Versao   : 2.4                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
+PROMPT +-------------------------------------------------------------------------------------------+
+
+SET TERMOUT OFF;
+COLUMN TOP_SQL_ATIVO NEW_VALUE TOP_SQL_ATIVO NOPRINT;
+SELECT LISTAGG(qtd || ' >> ' || sql_id, '  |   ') 
+       WITHIN GROUP (ORDER BY qtd DESC) AS TOP_SQL_ATIVO
+FROM (
+    SELECT COUNT(1) AS qtd, sql_id
+    FROM (
+        SELECT s.sql_id || '[' || s.sql_child_number||']' AS sql_id
+        FROM gv$session s, gv$process p, gv$px_session e
+        WHERE s.paddr = p.addr (+)
+          AND s.inst_id = p.inst_id (+)
+          AND s.status = 'ACTIVE'
+          AND s.inst_id = e.inst_id (+)
+          AND s.sid = e.sid (+)
+          AND s.serial# = e.serial# (+)
+          AND NVL(
+              CASE WHEN e.qcsid IS NOT NULL THEN e.qcsid || ',' || e.qcserial# END, 
+              SUBSTR(TRIM(s.WAIT_CLASS), 1, 13)
+          ) != 'Idle'
+          AND s.username IS NOT NULL
+		  and s.sql_id is not null
+    )
+    GROUP BY sql_id
+    HAVING COUNT(1) > 0
+)
+WHERE ROWNUM <= 3;
+SET TERMOUT ON;
+
+PROMPT | TOP ATIVO: &TOP_SQL_ATIVO                                                                
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT
+
+
 SET ECHO        OFF
 SET FEEDBACK    10
 SET HEADING     ON
@@ -70,7 +104,7 @@ select  s.sid || ',' || s.serial#|| case when s.inst_id is not null then ',@' ||
 ,    substr(s.osuser,1,10)   as osuser
 --,    substr(s.program,1,10)  as program
 ,    case when instr(s.program,'(J0') > 0  then substr(s.program,instr(s.program,'(J0'),10)||'-JOB' else substr(s.program,1,10) end  as program
-,    substr(s.machine, NVL(INSTR(s.machine, '\')+1, 1),19) as machine --'
+,    substr(s.machine, NVL(INSTR(s.machine, '\')+1, 1),19) as machine   --'
 ,    to_char(s.logon_time,'ddmm:hh24mi')||
      case when to_number(to_char((sysdate-nvl(s.last_call_et,0)/86400),'yyyymmddhh24miss'))-to_number(to_char(s.logon_time,'yyyymmddhh24miss')) > 60 then '[P]' ELSE '[NP]' END as logon_time
 ,        to_char(s.last_call_et)              as call_et
