@@ -1,17 +1,40 @@
 #!/bin/bash
-##############################################################################
-# Nome     : asm_identifica_disks_oracleasm.sh
-# Descrição: Identifica os discos do ASM, seus dispositivos no sistema operacional, tamanhos e status no ASM.
-# Autor    : Roberto Sobrinho >> https://dbasobrinho.com.br/
-# Versão   : 2.7
-# Data     : 2025-02-04
-# Uso      : Execute como root -> sudo ./asm_identifica_disks_oracleasm.sh
+################################################################################
+# 📌 Nome      : asm_identifica_disks_oracleasm.sh
+# 📌 Script    : https://github.com/dbasobrinho/g_gold/blob/master/asm_identifica_disks_oracleasm.sh
+# 📌 Autor     : Roberto Sobrinho >> https://dbasobrinho.com.br/
+# 📌 Versão    : 2.7
+# 📌 Data      : 2025-02-04
+# 📌 Licença   : MIT (ou outra, se aplicável)
 #
-# 📌 PRÉ-REQUISITOS:
-# - O Grid Infrastructure deve estar instalado e configurado.
-# - O comando oracleasm deve estar disponível no PATH.
-# - O comando lsblk deve estar disponível para mapear os discos.
-##############################################################################
+# 📌 Descrição :
+#   → Identifica os discos do ASM, seus dispositivos no sistema operacional, 
+#     tamanhos e status no ASM.
+#
+# 📌 Uso       :
+#   → Execute como root: 
+#       sudo ./asm_identifica_disks_oracleasm.sh
+#
+# 📌 Pré-requisitos :
+#   ✔️ Grid Infrastructure instalado e configurado.
+#   ✔️ O comando 'oracleasm' deve estar disponível no PATH.
+#   ✔️ O comando 'lsblk' deve estar disponível para mapear os discos.
+#
+# 📌 Exemplo de Saída:
+#
+#   ASM_DISK                           SIZE OS_DEVICE                                PATH_DISK                                GROUP_NUM  DISK_NUM   STATUS
+#   ------------------------------ -------- ---------------------------------------- ---------------------------------------- ---------- ---------- ----------
+#   DISKRQ_DATA_01                      20G /dev/mapper/mpath_DISKRQ_DATA_00         /dev/oracleasm/disks/DISKRQ_DATA_01      1          0          ONLINE
+#   DISKRQ_REDO1                         5G /dev/mapper/mpath_DISKRQ_REDO1_00        /dev/oracleasm/disks/DISKRQ_REDO1        2          0          ONLINE
+#   DISKRQ_REDO2                         5G /dev/mapper/mpath_DISKRQ_REDO2_00        /dev/oracleasm/disks/DISKRQ_REDO2        3          0          ONLINE
+#   DISKPIP1_DATA_00                   100G /dev/mapper/mpath_DISKPIP1_DATA_00       /dev/oracleasm/disks/DISKPIP1_DATA_00    4          0          ONLINE
+#   DISKPIP1_DATA_01                   100G /dev/mapper/mpath_DISKPIP1_DATA_01       /dev/oracleasm/disks/DISKPIP1_DATA_01    4          1          ONLINE
+#   DISKPIP1_DATA_02                   100G /dev/mapper/mpath_DISKPIP1_DATA_02       /dev/oracleasm/disks/DISKPIP1_DATA_02    4          2          ONLINE
+#   DISKPIP1_DATA_03                   100G /dev/mapper/mpath_DISKPIP1_DATA_03       /dev/oracleasm/disks/DISKPIP1_DATA_03    4          3          ONLINE
+#   DISKPIP1_DATA_04                   100G /dev/mapper/mpath_DISKPIP1_DATA_04       /dev/oracleasm/disks/DISKPIP1_DATA_04    4          4          ONLINE
+#
+################################################################################
+
 
 echo ". . ."
 echo "========================================================================"
