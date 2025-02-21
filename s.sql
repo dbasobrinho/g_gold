@@ -15,6 +15,8 @@
 -- +-------------------------------------------------------------------------------------------+
 -- |"O Guina não tinha dó, se ragir, BUMMM! vira pó!"
 -- +-------------------------------------------------------------------------------------------+
+-- echo "@s.sql" | sqlplus -s / as sysdba | tail -n +12 | egrep -i 'APP_BOB|SESSIONWAIT'
+-- +-------------------------------------------------------------------------------------------+
 SET TERMOUT OFF;
 ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-YY HH24:MI:SS';
 EXEC dbms_application_info.set_module( module_name => 's[s.sql]', action_name =>  's[s.sql]');
