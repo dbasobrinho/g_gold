@@ -9,7 +9,8 @@
 -- | Modificacao: 2.1 - 03/08/2019 - rfsobrinho - Vizulizar MODULE no USERNAME                 |
 -- |              2.2 - 24/02/2021 - rfsobrinho - Ver POOL conexao e CHILD                     |  
 -- |              2.3 - 17/09/2023 - rfsobrinho - novo machine                                 |
--- |              2.4 - 17/12/2023 - rfsobrinho - Incluido o TOP SQL ATIVO:                    |
+-- |              2.4 - 17/12/2024 - rfsobrinho - Incluido o TOP SQL ATIVO:                    |
+-- |              2.5 - 08/05/2025 - rfsobrinho - sessionwait incluido C = CPU e W = WAITING   |
 -- +-------------------------------------------------------------------------------------------+
 -- |                                                                https://dbasobrinho.com.br |
 -- +-------------------------------------------------------------------------------------------+
@@ -29,7 +30,7 @@ PROMPT | https://github.com/dbasobrinho/g_gold/blob/main/s.sql                  
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT | Script   : Sessoes Ativas                                        +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT | Instancia: &current_instance                                     |d|b|a|s|o|b|r|i|n|h|o|  |
-PROMPT | Versao   : 2.4                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
+PROMPT | Versao   : 2.5                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT +-------------------------------------------------------------------------------------------+
 
 SET TERMOUT OFF;
@@ -64,7 +65,6 @@ PROMPT | TOP ATIVO: &TOP_SQL_ATIVO
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT
 
-
 SET ECHO        OFF
 SET FEEDBACK    10
 SET HEADING     ON
@@ -90,7 +90,7 @@ col client_info  format a23
 col machine      format a19
 col logon_time   format a13 
 col hold         format a06
-col sessionwait  format a24
+col sessionwait  format a26
 col status       format a08
 col hash_value   format a10 
 col sc_wait      format a06 HEADING 'WAIT'
@@ -107,10 +107,10 @@ select  s.sid || ',' || s.serial#|| case when s.inst_id is not null then ',@' ||
 --,    substr(s.program,1,10)  as program
 ,    case when instr(s.program,'(J0') > 0  then substr(s.program,instr(s.program,'(J0'),10)||'-JOB' else substr(s.program,1,10) end  as program
 ,    substr(s.machine, NVL(INSTR(s.machine, '\')+1, 1),19) as machine   --'
-,    to_char(s.logon_time,'ddmm:hh24mi')||
+,    to_char(s.logon_time,'ddmm:hh24mi')|| 
      case when to_number(to_char((sysdate-nvl(s.last_call_et,0)/86400),'yyyymmddhh24miss'))-to_number(to_char(s.logon_time,'yyyymmddhh24miss')) > 60 then '[P]' ELSE '[NP]' END as logon_time
 ,        to_char(s.last_call_et)              as call_et
-,    substr((select trim(replace(replace(substr(event,1,100),'SQL*Net'),'Streams')) from gv$session_wait j where j.sid = s.sid and j.INST_ID =  s.inst_id),1,24) as sessionwait
+,     decode(s.state,'WAITING','W ','C '),substr((select trim(replace(replace(substr(event,1,100),'SQL*Net'),'Streams')) from gv$session_wait j where j.sid = s.sid and j.INST_ID =  s.inst_id),1,24) as sessionwait
 ,        s.sql_id||' '||SQL_CHILD_NUMBER  as sql_id
 ,    s.blocking_session || ',' || s.blocking_instance as hold
 ,        to_char(s.seconds_in_wait) as sc_wait
