@@ -53,7 +53,7 @@ FROM (
               SUBSTR(TRIM(s.WAIT_CLASS), 1, 13)
           ) != 'Idle'
           AND s.username IS NOT NULL
-		  and s.sql_id is not null
+                  and s.sql_id is not null
     )
     GROUP BY sql_id
     HAVING COUNT(1) > 0
@@ -68,7 +68,7 @@ PROMPT
 SET ECHO        OFF
 SET FEEDBACK    10
 SET HEADING     ON
-SET LINES       188
+SET LINES       190 
 SET PAGES       300 
 SET TERMOUT     ON
 SET TIMING      OFF
@@ -108,9 +108,9 @@ select  s.sid || ',' || s.serial#|| case when s.inst_id is not null then ',@' ||
 ,    case when instr(s.program,'(J0') > 0  then substr(s.program,instr(s.program,'(J0'),10)||'-JOB' else substr(s.program,1,10) end  as program
 ,    substr(s.machine, NVL(INSTR(s.machine, '\')+1, 1),19) as machine   --'
 ,    to_char(s.logon_time,'ddmm:hh24mi')|| 
-     case when to_number(to_char((sysdate-nvl(s.last_call_et,0)/86400),'yyyymmddhh24miss'))-to_number(to_char(s.logon_time,'yyyymmddhh24miss')) > 60 then '[P]' ELSE '[NP]' END as logon_time
-,        to_char(s.last_call_et)              as call_et
-,     decode(s.state,'WAITING','W ','C '),substr((select trim(replace(replace(substr(event,1,100),'SQL*Net'),'Streams')) from gv$session_wait j where j.sid = s.sid and j.INST_ID =  s.inst_id),1,24) as sessionwait
+     case when to_number(to_char((sysdate-nvl(s.last_call_et,0)/86400),'yyyymmddhh24miss'))-to_number(to_char(s.logon_time,'yyyymmddhh24miss')) > 60 then '[P]' ELSE '[NP]' END as logon_time,        to_char(s.last_call_et)              as call_et
+--,     decode(s.state,'WAITING','[W]','[C]')||substr((select trim(replace(replace(substr(event,1,100),'SQL*Net'),'Streams')) from gv$session_wait j where j.sid = s.sid and j.INST_ID =  s.inst_id),1,23) as sessionwait
+,     decode(s.state,'WAITING',substr((select trim(replace(replace(substr(event,1,100),'SQL*Net'),'Streams')) from gv$session_wait j where j.sid = s.sid and j.INST_ID =  s.inst_id),1,23),'ON CPU') as sessionwait
 ,        s.sql_id||' '||SQL_CHILD_NUMBER  as sql_id
 ,    s.blocking_session || ',' || s.blocking_instance as hold
 ,        to_char(s.seconds_in_wait) as sc_wait
