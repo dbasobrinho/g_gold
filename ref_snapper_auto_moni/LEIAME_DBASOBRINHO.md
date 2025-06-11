@@ -2,7 +2,7 @@ Este diretório contém scripts para monitoramento contínuo de instâncias Orac
 São utilizados o Snapper (criado por Tanel Poder), oratop e scripts para análise
 do uso de CPU, organizados para facilitar o acompanhamento de performance em tempo real.
 
-Autor: Roberto Fernandes Sobrinho
+Autor: Roberto Fernandes Sobrinho 
 Blog: https://dbasobrinho.com.br
 
 
