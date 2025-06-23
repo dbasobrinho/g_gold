@@ -96,11 +96,11 @@ col client_info  format a23
 col machine      format a19
 col logon_time   format a13 
 col hold         format a06
-col sessionwait  format a26
+col sessionwait  format a24
 col status       format a08
 col hash_value   format a10 
 col sc_wait      format a06 HEADING 'WAIT'
-col SQL_ID       format a15 HEADING 'SQL_ID/CHILD'
+col SQL_ID       format a16 HEADING 'SQL_ID/CHILD'
 col module       format a08 HEADING 'MODULE'
 SET COLSEP '|'
 select  s.sid || ',' || s.serial#|| case when s.inst_id is not null then ',@' || s.inst_id end  as "SID/SERIAL"
@@ -116,7 +116,7 @@ select  s.sid || ',' || s.serial#|| case when s.inst_id is not null then ',@' ||
 ,    to_char(s.logon_time,'ddmm:hh24mi')|| 
      case when to_number(to_char((sysdate-nvl(s.last_call_et,0)/86400),'yyyymmddhh24miss'))-to_number(to_char(s.logon_time,'yyyymmddhh24miss')) > 60 then '[P]' ELSE '[NP]' END as logon_time,        to_char(s.last_call_et)              as call_et
 --,     decode(s.state,'WAITING','[W]','[C]')||substr((select trim(replace(replace(substr(event,1,100),'SQL*Net'),'Streams')) from gv$session_wait j where j.sid = s.sid and j.INST_ID =  s.inst_id),1,23) as sessionwait
-,     decode(s.state,'WAITING',substr((select trim(replace(replace(substr(event,1,100),'SQL*Net'),'Streams')) from gv$session_wait j where j.sid = s.sid and j.INST_ID =  s.inst_id),1,23),'ON CPU') as sessionwait
+,     decode(s.state,'WAITING',substr((select trim(replace(replace(substr(event,1,100),'SQL*Net'),'Streams')) from gv$session_wait j where j.sid = s.sid and j.INST_ID =  s.inst_id),1,24),'ON CPU') as sessionwait
 ,        s.sql_id||' '||SQL_CHILD_NUMBER  as sql_id
 ,    s.blocking_session || ',' || s.blocking_instance as hold
 ,        to_char(s.seconds_in_wait) as sc_wait
