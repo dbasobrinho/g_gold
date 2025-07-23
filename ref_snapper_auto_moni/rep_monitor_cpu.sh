@@ -12,7 +12,7 @@
 #   - Exibe apenas se NB_CPU > valor informado pelo usuário
 #   - Alinha cabeçalho dinamicamente
 ###############################################################################
-
+ 
 echo
 echo "================================================================================="
 echo "Este script verifica o uso de CPU por instância baseado nos logs do Snapper."
