@@ -32,8 +32,8 @@ PROMPT +------------------------------------------------------------------------
 PROMPT | https://github.com/dbasobrinho/g_gold/blob/main/undo.sql                                  |
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT | Script   : Informacoes de UNDO                                    +-+-+-+-+-+-+-+-+-+-+-+ |
-PROMPT | Instância: &current_instance                                     |d|b|a|s|o|b|r|i|n|h|o| |
-PROMPT | Versão   : 1.0                                                   +-+-+-+-+-+-+-+-+-+-+-+ |
+PROMPT | Instância: &current_instance                                      |d|b|a|s|o|b|r|i|n|h|o| |
+PROMPT | Versão   : 1.0                                                    +-+-+-+-+-+-+-+-+-+-+-+ |
 PROMPT +-------------------------------------------------------------------------------------------+
 
 
