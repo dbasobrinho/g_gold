@@ -217,8 +217,8 @@ PROMPT | Sessoes que estao utilizando UNDO
 PROMPT +-------------------------------------------------------------------------------------------+
 
 COLUMN sid_serial FORMAT A19 HEADING 'SID/SERIAL@|INSTANCIA'JUSTIFY CENTER
-COLUMN username   FORMAT A25 HEADING 'USUARIO|ORACLE'       JUSTIFY CENTER
-COLUMN program    FORMAT A50 HEADING 'PROGRAMA|CLIENTE'     JUSTIFY CENTER
+COLUMN username   FORMAT A20 HEADING 'USUARIO|ORACLE'       JUSTIFY CENTER
+COLUMN program    FORMAT A35 HEADING 'PROGRAMA|CLIENTE'     JUSTIFY CENTER
 COLUMN undoseg    FORMAT A20 HEADING 'SEGMENTO|UNDO'        JUSTIFY CENTER
 COLUMN undo       FORMAT A10 HEADING 'TAMANHO|UNDO'         JUSTIFY CENTER
 COLUMN used_urec  FORMAT 99999 HEADING 'UNDO|RECORDS'       JUSTIFY CENTER
@@ -229,8 +229,8 @@ COLUMN sql_id     FORMAT A13 HEADING 'SQL_ID|ATUAL'         JUSTIFY CENTER
 
 SELECT
   s.sid || ',' || s.serial# || '@' || s.inst_id         AS sid_serial,
-  substr(NVL(s.username, '(oracle)'),1,25)                           AS username,
-  SUBSTR(s.program, 1, 50)                              AS program,
+  substr(NVL(s.username, '(oracle)'),1,20)                           AS username,
+  SUBSTR(s.program, 1, 35)                              AS program,
   '_SYSSMU' || TO_CHAR(t.xidusn) || '$'                 AS undoseg,
   LPAD(ROUND(t.used_ublk * TO_NUMBER(p.value)/1024) || 'K', 10) AS undo,
   t.used_urec                                           AS used_urec,
