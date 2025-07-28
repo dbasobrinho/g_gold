@@ -1,0 +1,11 @@
+SQL> @/media/sf_tmp/AUTO/20250726/2025101/2script.sql
+
+SYSDATE                                                                         
+-------------------                                                             
+26/07/2025 17:49:56                                                             
+
+SQL> spool off
+:56
+
+SQL> SQL> Disconnected from Oracle Database 21c Enterprise Edition Release 21.0.0.0.0 - Production
+Version 21.3.0.0.0

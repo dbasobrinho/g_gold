@@ -1,0 +1,8 @@
+Executando script: 1script.sql
+1script.sql > sucesso na execução
+Executando script: 2script.sql
+2script.sql > sucesso na execução
+Executando script: 3script.sql
+3script.sql > erro (timeout)
+Executando rollback: 3script_fallback.sql
+3script_fallback.sql > Rollback do script anterior, Sucesso na execução

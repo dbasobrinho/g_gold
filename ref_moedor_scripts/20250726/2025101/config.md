@@ -1,0 +1,8 @@
+# Configuração do tempo limite 
+TIMEOUT_MIN=2
+
+# Lista de scripts
+1script.sql:[S]:1script_fallback.sql
+2script.sql:[S]:2script_fallback.sql
+3script.sql:[S]:3script_fallback.sql
+

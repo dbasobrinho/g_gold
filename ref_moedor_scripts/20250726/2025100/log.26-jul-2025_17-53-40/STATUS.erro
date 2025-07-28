@@ -1,0 +1,4 @@
+Executando script: 1script.sql
+1script.sql > erro na execução
+Executando rollback: 1script_fallback.sql
+1script_fallback.sql > Rollback do script anterior, Sucesso na execução
