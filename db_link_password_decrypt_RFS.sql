@@ -4,6 +4,11 @@ SET PAGES       300
 set verify off;
 PROMPT 
 PROMPT ======================================================
+PROMPT  Informe o OWNER do DB Link que deseja descriptografar:
+PROMPT ======================================================
+ACCEPT p_link_owner  PROMPT '>> '
+PROMPT 
+PROMPT ======================================================
 PROMPT  Informe o nome do DB Link que deseja descriptografar:
 PROMPT ======================================================
 ACCEPT p_link_name PROMPT '>> '
@@ -46,6 +51,7 @@ DECLARE
    NO_USERID_VERIFIER_SALT sys.props$.value$%TYPE;
    password_link           sys.link$.passwordx%TYPE;
    p_link_name             VARCHAR2(200) := '&p_link_name';
+   p_link_owner             VARCHAR2(200) := '&p_link_owner';
 --Fim Adapatacao DBASobrinho
 BEGIN
 --Inicio Adapatacao DBASobrinho
@@ -62,10 +68,13 @@ BEGIN
 	   END;
 
 	   BEGIN
-		  SELECT passwordx
-			INTO password_link
-			FROM sys.link$
-		   WHERE name = UPPER(p_link_name) and passwordx is not null;
+			SELECT l.passwordx
+			  INTO password_link
+			  FROM sys.link$ l
+			  JOIN sys.user$ u ON l.owner# = u.user#
+			 WHERE u.name = UPPER(p_link_owner)
+			   AND l.name = UPPER(p_link_name)
+			   AND l.passwordx IS NOT NULL;
 	   EXCEPTION
 		  WHEN NO_DATA_FOUND THEN
 			 DBMS_OUTPUT.put_line('Erro: DBLINK "' || UPPER(p_link_name) || '" não encontrado em sys.link$');
