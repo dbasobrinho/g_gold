@@ -1,0 +1,21 @@
+SET LINES       190 
+SET PAGES       300 
+SET TRIMSPOOL ON
+SET FEEDBACK on
+SET VERIFY OFF
+
+COLUMN OWNER    FORMAT A15 HEADING 'OWNER'
+COLUMN DB_LINK FORMAT A50 HEADING 'DB LINK'
+COLUMN USERNAME FORMAT A20 HEADING 'USUÁRIO'
+COLUMN HOST     FORMAT A90 HEADING 'HOST DE DESTINO'
+
+PROMPT
+PROMPT ==================== Lista de DB Links ====================
+PROMPT
+
+SELECT owner,
+       db_link,
+       username,
+       host
+  FROM dba_db_links
+ ORDER BY owner, db_link;
