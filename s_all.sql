@@ -1,10 +1,10 @@
 -- |
 -- +-------------------------------------------------------------------------------------------+
--- | Objetivo   : Sessoes Ativas                                                               |
+-- | Objetivo   : Sessoes Ativas e Inativas                                                    |
 -- | Criador    : Roberto Fernandes Sobrinho                                                   |
 -- | Data       : 15/12/2015                                                                   |
--- | Exemplo    : @s.sql                                                                       |  
--- | Arquivo    : s.sql                                                                        |
+-- | Exemplo    : @s_all.sql                                                                   |  
+-- | Arquivo    : s_all.sql                                                                    |
 -- | Referncia  :                                                                              |
 -- | Modificacao: 2.1 - 03/08/2019 - rfsobrinho - Vizulizar MODULE no USERNAME                 |
 -- |              2.2 - 24/02/2021 - rfsobrinho - Ver POOL conexao e CHILD                     |  
@@ -17,7 +17,7 @@
 -- +-------------------------------------------------------------------------------------------+
 -- |"O Guina não tinha dó, se ragir, BUMMM! vira pó!"
 -- +-------------------------------------------------------------------------------------------+
---> while true; do 
+--> while true; do
 -->   echo ===================================================
 -->   date '+%Y-%m-%d %H:%M:%S'
 -->   echo "@s.sql" | sqlplus -s / as sysdba | tail -n +12 | egrep -i 'f2xb0s01bh9cy|SESSIONWAIT'
@@ -33,9 +33,9 @@ SELECT rpad(sys_context('USERENV', 'INSTANCE_NAME'), 17) current_instance FROM d
 SET TERMOUT ON;
 PROMPT
 PROMPT +-------------------------------------------------------------------------------------------+
-PROMPT | https://github.com/dbasobrinho/g_gold/blob/main/s.sql                                     |
+PROMPT | https://github.com/dbasobrinho/g_gold/blob/main/s_all.sql                                 |
 PROMPT +-------------------------------------------------------------------------------------------+
-PROMPT | Script   : Sessoes Ativas                                        +-+-+-+-+-+-+-+-+-+-+-+  |
+PROMPT | Script   : Sessoes Ativas e Inativas                             +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT | Instancia: &current_instance                                     |d|b|a|s|o|b|r|i|n|h|o|  |
 PROMPT | Versao   : 2.6                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT +-------------------------------------------------------------------------------------------+
@@ -83,7 +83,7 @@ SET TRIMOUT     ON
 SET TRIMSPOOL   ON
 SET VERIFY      OFF
 CLEAR COLUMNS 
-CLEAR BREAKS
+CLEAR BREAKS 
 CLEAR COMPUTES
 col "SID/SERIAL" format a15  heading 'SID/SERIAL@I' justify c
 col slave        format a14  heading 'SLAVE/W_CLASS' justify c
@@ -94,17 +94,16 @@ col osuser       format a09  heading 'OSUSER' justify c
 col call_et      format a07  heading 'CALL_ET' justify c
 col program      format a10  heading 'PROGRAM' justify c
 col client_info  format a23  heading 'CLIENT_INFO' justify c
-col machine      format a19  heading 'MACHINE' justify c
-col logon_time   format a12  heading 'LOGON_TIME' justify c
+col machine      format a19  heading 'MACHINE' justify c 
+col logon_time   format a12  heading 'LOGON_TIME' justify c 
 col hold         format a06  heading 'HOLD' justify c
-col sessionwait  format a24  heading 'SESSION_WAIT' justify c 
+col sessionwait  format a24  heading 'SESSION_WAIT' justify c
 col status       format a08  heading 'STATUS' justify c
-col hash_value   format a10  heading 'HASH_VALUE' justify c 
+col hash_value   format a10  heading 'HASH_VALUE' justify c
 col CS           format a03  heading 'C-S' justify c
 col sc_wait      format a06  heading 'WAIT' justify c
 col SQL_ID       format a17  heading 'SQL_ID/CHILD' justify c
 col module       format a07  heading 'MODULE' justify c
-
 
 SET COLSEP '|'
 select  s.sid || ',' || s.serial#|| case when s.inst_id is not null then ',@' || s.inst_id end  as "SID/SERIAL"
@@ -112,7 +111,7 @@ select  s.sid || ',' || s.serial#|| case when s.inst_id is not null then ',@' ||
          when 'DEDICATED' then 'D'
          when 'SHARED'    then 'S'
          when 'POOLED'    then 'D'       -- DRCP (Database Resident Connection Pool)
-		  when 'NONE'      then 'N' 
+		 when 'NONE'      then 'N' 
          else nvl(s.server,'?')
      end || decode(upper(s.status),'ACTIVE','-A','-I') AS CS
 ,--decode(upper(s.status),'ACTIVE','A','I')||' '||
@@ -137,14 +136,14 @@ from gv$session s
 ,    gv$px_session e
 Where s.paddr       = p.addr    (+)
   and s.inst_id     = p.inst_id (+)
-  and s.status      = 'ACTIVE'   --and s.sid= 2568
+  --and s.status      = 'ACTIVE'   --and s.sid= 2568
   and s.inst_id     = e.inst_id (+)
   and s.sid         = e.sid     (+)
   and s.serial#     = e.serial# (+)
   --and s.WAIT_CLASS != 'Idle'
-  and nvl((case when e.qcsid is not null then e.qcsid || ',' || e.qcserial#|| case when e.inst_id is not null then ',@' || e.inst_id end end),substr(trim(s.WAIT_CLASS),1,13)) != 'Idle'
+  --and nvl((case when e.qcsid is not null then e.qcsid || ',' || e.qcserial#|| case when e.inst_id is not null then ',@' || e.inst_id end end),substr(trim(s.WAIT_CLASS),1,13)) != 'Idle'
   and s.username is not null
-order by decode(s.username,'SYS',to_number(s.inst_id||50000000),s.inst_id) , case when instr(SLAVE,',,@') >0 then (substr(SLAVE,3,2)||'1') when instr(SLAVE,'@') >0 then  (decode(upper(s.WAIT_CLASS),'IDLE',2,1)||substr(SLAVE,3,2)||'2') else null end, 
+order by s.status desc, s.inst_id||to_char(p.spid), decode(s.username,'SYS',to_number(s.inst_id||50000000),s.inst_id) , case when instr(SLAVE,',,@') >0 then (substr(SLAVE,3,2)||'1') when instr(SLAVE,'@') >0 then  (decode(upper(s.WAIT_CLASS),'IDLE',2,1)||substr(SLAVE,3,2)||'2') else null end, 
 decode(s.username,'SYS',50000000,sc_wait), s.sql_id, s.machine, s.last_call_et
 /
 --SET COLSEP ' '
