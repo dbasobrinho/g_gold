@@ -25,7 +25,7 @@ PROMPT | https://github.com/dbasobrinho/g_gold/blob/main/locktree.sql           
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT | Script   : Arvore de Locks Oracle                                +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT | Instancia: &current_instance                                     |d|b|a|s|o|b|r|i|n|h|o|  |
-PROMPT | Versao   : 2.1                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
+PROMPT | Versao   : 2.2                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT
 SET ECHO        OFF
@@ -58,9 +58,11 @@ COLUMN prev_sql_id        FORMAT A13       HEADING 'SQLID PREV|-'      JUSTIFY C
 COLUMN sql_id             FORMAT A13       HEADING 'SQLID|-'           JUSTIFY CENTER
 COLUMN last_call_et       FORMAT 99999999  HEADING 'LAST|CALL_ET'      JUSTIFY CENTER
 COLUMN seconds_in_wait    FORMAT 99999999  HEADING 'SECONDS|IN_WAIT'   JUSTIFY CENTER
+col RESOURCE_MAN format a01  heading 'M' justify c
 SET COLSEP '|'
 SELECT level,
        LPAD(' ', (level-1)*2, ' ') || NVL(substr(s.username,1,25), '(oracle)') AS username,
+	   decode(nvl(s.RESOURCE_CONSUMER_GROUP,'<>'),'OTHER_GROUPS','o','_ORACLE_BACKGROUND_GROUP_','b','SYS_GROUP','s',' ',' ','!') RESOURCE_MAN,
        substr(s.osuser,1,20) osuser,
        s.sid || ',' || s.serial# || CASE WHEN s.inst_id IS NOT NULL THEN ',@' || s.inst_id END AS SID_SERIAL,
        s.blocking_session || NVL2(s.blocking_session,',@',' ') || s.blocking_instance AS block_sid,

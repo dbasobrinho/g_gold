@@ -12,6 +12,7 @@
 -- |              2.4 - 17/12/2024 - rfsobrinho - Incluido o TOP SQL ATIVO:                    |
 -- |              2.5 - 08/05/2025 - rfsobrinho - sessionwait incluido C = CPU e W = WAITING   |
 -- |              2.6 - 20/08/2025 - rfsobrinho - Coluna CS (CONECTION SERVER + STATUS)        |
+-- |              2.6 - 08/09/2025 - rfsobrinho - Adicionado RESOURCE_MAN                      |
 -- +-------------------------------------------------------------------------------------------+
 -- |                                                                https://dbasobrinho.com.br |
 -- +-------------------------------------------------------------------------------------------+
@@ -37,7 +38,7 @@ PROMPT | https://github.com/dbasobrinho/g_gold/blob/main/s.sql                  
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT | Script   : Sessoes Ativas                                        +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT | Instancia: &current_instance                                     |d|b|a|s|o|b|r|i|n|h|o|  |
-PROMPT | Versao   : 2.6                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
+PROMPT | Versao   : 2.7                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT +-------------------------------------------------------------------------------------------+
 
 SET TERMOUT OFF;
@@ -88,7 +89,7 @@ CLEAR COMPUTES
 col "SID/SERIAL" format a15  heading 'SID/SERIAL@I' justify c
 col slave        format a14  heading 'SLAVE/W_CLASS' justify c
 col opid         format a04  heading 'OPID' justify c
-col sopid        format a08  heading 'S-OPID' justify c
+col sopid        format a08  heading 'SO-PID' justify c
 col username     format a09  heading 'USERNAME' justify c
 col osuser       format a09  heading 'OSUSER' justify c
 col call_et      format a07  heading 'CALL_ET' justify c
@@ -100,10 +101,11 @@ col hold         format a06  heading 'HOLD' justify c
 col sessionwait  format a24  heading 'SESSION_WAIT' justify c 
 col status       format a08  heading 'STATUS' justify c
 col hash_value   format a10  heading 'HASH_VALUE' justify c 
-col CS           format a03  heading 'C-S' justify c
+col CS           format a02  heading 'CS' justify c
 col sc_wait      format a06  heading 'WAIT' justify c
 col SQL_ID       format a17  heading 'SQL_ID/CHILD' justify c
 col module       format a07  heading 'MODULE' justify c
+col RESOURCE_MAN format a01  heading 'M' justify c
 
 
 SET COLSEP '|'
@@ -114,18 +116,20 @@ select  s.sid || ',' || s.serial#|| case when s.inst_id is not null then ',@' ||
          when 'POOLED'    then 'D'       -- DRCP (Database Resident Connection Pool)
 		  when 'NONE'      then 'N' 
          else nvl(s.server,'?')
-     end || decode(upper(s.status),'ACTIVE','-A','-I') AS CS
+     end || decode(upper(s.status),'ACTIVE','A','I') AS CS
 ,--decode(upper(s.status),'ACTIVE','A','I')||' '||
  to_char(nvl((case when e.qcsid is not null then e.qcsid || ',' || e.qcserial#|| case when e.inst_id is not null then ',@' || e.inst_id end end),substr(trim(s.WAIT_CLASS),1,12)))  as SLAVE
 ,    to_char(p.pid)          as opid
 ,    to_char(p.spid)         as sopid
 ,    substr(substr(s.username,1,10)||decode(s.username,'SYS',SUBSTR(nvl2(s.module,' [',null)||UPPER(s.module),1,6)||nvl2(s.module,']',null)),1,9) as username
+,    decode(nvl(s.RESOURCE_CONSUMER_GROUP,'<>'),'OTHER_GROUPS','o','_ORACLE_BACKGROUND_GROUP_','b','SYS_GROUP','s',' ',' ','!') RESOURCE_MAN
 ,    substr(s.osuser,1,09)   as osuser
 --,    substr(s.program,1,10)  as program
 ,    case when instr(s.program,'(J0') > 0  then substr(s.program,instr(s.program,'(J0'),10)||'-JOB' else substr(s.program,1,10) end  as program
 ,    substr(s.machine, NVL(INSTR(s.machine, '\')+1, 1),19) as machine   --'
 ,    to_char(s.logon_time,'ddmm:hh24mi')|| 
-     case when to_number(to_char((sysdate-nvl(s.last_call_et,0)/86400),'yyyymmddhh24miss'))-to_number(to_char(s.logon_time,'yyyymmddhh24miss')) > 60 then '[P]' ELSE '[*]' END as logon_time,        to_char(s.last_call_et)              as call_et
+     case when to_number(to_char((sysdate-nvl(s.last_call_et,0)/86400),'yyyymmddhh24miss'))-to_number(to_char(s.logon_time,'yyyymmddhh24miss')) > 60 then '[P]' ELSE '[*]' END as logon_time        
+,    to_char(s.last_call_et)              as call_et
 --,     decode(s.state,'WAITING','[W]','[C]')||substr((select trim(replace(replace(substr(event,1,100),'SQL*Net'),'Streams')) from gv$session_wait j where j.sid = s.sid and j.INST_ID =  s.inst_id),1,23) as sessionwait
 ,     decode(s.state,'WAITING',substr((select trim(replace(replace(substr(event,1,100),'SQL*Net'),'Streams')) from gv$session_wait j where j.sid = s.sid and j.INST_ID =  s.inst_id),1,24),'ON CPU') as sessionwait
 ,        s.sql_id||' '||SQL_CHILD_NUMBER  as sql_id
