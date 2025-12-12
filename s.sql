@@ -1,5 +1,5 @@
 -- |
--- +-------------------------------------------------------------------------------------------+
+-- +-------------------------------------------------------------------------------------------+ 
 -- | Objetivo   : Sessoes Ativas                                                               |
 -- | Criador    : Roberto Fernandes Sobrinho                                                   |
 -- | Data       : 15/12/2015                                                                   |
@@ -24,7 +24,7 @@
 -->   echo "@s.sql" | sqlplus -s / as sysdba | tail -n +12 | egrep -i 'f2xb0s01bh9cy|SESSIONWAIT'
 -->   sleep 10
 -->   echo . . . 
---> done
+--> done 
 -- +-------------------------------------------------------------------------------------------+
 SET TERMOUT OFF;
 ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-YY HH24:MI:SS';

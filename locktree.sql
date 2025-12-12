@@ -8,6 +8,7 @@
 -- | Referencia :                                                                              |
 -- | Modificacao: 2.0 - 25/10/2018 - rfsobrinho - primeira versao                              |
 -- |              2.1 - 20/08/2025 - rfsobrinho - Ajuste XID e WAIT_USN/SLOT/SEQ no report     |
+-- |              2.2 - 12/12/2025 - rfsobrinho - Ajuste ON-CPU                                |
 -- +-------------------------------------------------------------------------------------------+
 -- |                                                                https://dbasobrinho.com.br |
 -- +-------------------------------------------------------------------------------------------+
@@ -51,9 +52,6 @@ COLUMN status             FORMAT A8        HEADING 'STATUS|-'          JUSTIFY C
 COLUMN logon_time         FORMAT A15       HEADING 'LOGON TIME|-'      JUSTIFY CENTER
 COLUMN SessionWait        FORMAT A30       HEADING 'EVENT WAIT|-'      JUSTIFY CENTER
 COLUMN xid                FORMAT A16       HEADING 'XID|-'             JUSTIFY CENTER
---COLUMN wait_usn           FORMAT 999999    HEADING 'WAIT|USN'          JUSTIFY CENTER
---COLUMN wait_slot          FORMAT 999999    HEADING 'WAIT|SLOT'         JUSTIFY CENTER
---COLUMN wait_seq           FORMAT 999999    HEADING 'WAIT|SEQ'          JUSTIFY CENTER
 COLUMN prev_sql_id        FORMAT A13       HEADING 'SQLID PREV|-'      JUSTIFY CENTER
 COLUMN sql_id             FORMAT A13       HEADING 'SQLID|-'           JUSTIFY CENTER
 COLUMN last_call_et       FORMAT 99999999  HEADING 'LAST|CALL_ET'      JUSTIFY CENTER
@@ -68,22 +66,14 @@ SELECT level,
        s.blocking_session || NVL2(s.blocking_session,',@',' ') || s.blocking_instance AS block_sid,
        s.status,
        TO_CHAR(s.logon_time,'DDMMYY HH24:MI:SS') AS logon_time,
-       SUBSTR((SELECT TRIM(SUBSTR(w.event,1,100))
-                 FROM gv$session_wait w
-                WHERE w.sid = s.sid
-                  AND w.inst_id = s.inst_id),1,30) AS SessionWait,
+	   decode(s.state,'WAITING',substr((select trim(replace(replace(substr(event,1,100),'SQL*Net'),'Streams')) from gv$session_wait j where j.sid = s.sid and j.INST_ID =  s.inst_id),1,24),'ON CPU') as sessionwait,
        NVL( (SELECT RAWTOHEX(t.xid)
                FROM gv$transaction t
               WHERE t.inst_id = s.inst_id
                 AND t.ses_addr = s.saddr
+				and RAWTOHEX(t.xid) is not null
                 AND ROWNUM = 1),
             'N/A') AS xid,
---       CASE WHEN s.event LIKE 'enq: TX - row lock contention'
---            THEN TRUNC(s.p1/65536) END AS wait_usn,
---       CASE WHEN s.event LIKE 'enq: TX - row lock contention'
---            THEN MOD(s.p1,65536) END  AS wait_slot,
---       CASE WHEN s.event LIKE 'enq: TX - row lock contention'
---            THEN s.p2 END             AS wait_seq,
        s.prev_sql_id,
        s.sql_id,
        s.last_call_et,
@@ -100,3 +90,4 @@ START WITH s.blocking_session IS NULL;
 
 SET LINES       190 
 SET PAGES       300 
+
