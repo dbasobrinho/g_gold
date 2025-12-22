@@ -1,0 +1,1 @@
+asm_full_diagnostic_report.sh

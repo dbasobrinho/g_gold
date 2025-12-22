@@ -11,7 +11,7 @@
 -- |              1.3 - 22/06/2025 - rfsobrinho - Otimização de cálculo de minutos e layout    |
 -- +-------------------------------------------------------------------------------------------+
 -- |                                                                 https://dbasobrinho.com.br |
--- +-------------------------------------------------------------------------------------------+
+-- +-------------------------------------------------------------------------------------------+ 
 -- |"O Guina não tinha dó, se ragir, BUMMM! vira pó!"
 -- +-------------------------------------------------------------------------------------------+
 --> while true; do
@@ -34,7 +34,7 @@ PROMPT
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT | https://github.com/dbasobrinho/g_gold/blob/main/tun_coe_snap.sql                          |
 PROMPT +-------------------------------------------------------------------------------------------+
-PROMPT | Script   : Tempo de Execução por SQL_ID (AWR)              +-+-+-+-+-+-+-+-+-+-+-+        |
+PROMPT | Script   : Tempo de Execucao por SQL_ID (AWR)              +-+-+-+-+-+-+-+-+-+-+-+        |
 PROMPT | Instância: &current_instance                               |d|b|a|s|o|b|r|i|n|h|o|        |
 PROMPT | Versão   : 1.3                                             +-+-+-+-+-+-+-+-+-+-+-+        |
 PROMPT +-------------------------------------------------------------------------------------------+
@@ -61,31 +61,32 @@ CLEAR COMPUTES
 COL inst_id      FORMAT 99               HEADING 'INST'                 JUSTIFY CENTER
 COL snap_id      FORMAT 99999999         HEADING 'ID SNAP'             JUSTIFY CENTER
 COL sql_id       FORMAT a13              HEADING 'SQL_ID'              JUSTIFY CENTER
-COL sql_profile  FORMAT a30              HEADING 'SQL PROFILE'         JUSTIFY CENTER 
+COL sql_profile  FORMAT a28              HEADING 'SQL PROFILE'         JUSTIFY CENTER 
 COL loads_delta  FORMAT 999              HEADING 'LOADS'               JUSTIFY CENTER 
 COL cpu_time     FORMAT 9999999999       HEADING 'CPU (MIN)'           JUSTIFY CENTER  
 COL elapsed_time FORMAT 9999999999       HEADING 'ELAPSED (MIN)'       JUSTIFY CENTER  
-COL btime        FORMAT a12              HEADING 'INÍCIO'              JUSTIFY CENTER 
+COL btime        FORMAT a13              HEADING 'INICIO'              JUSTIFY CENTER 
 COL etime        FORMAT a05              HEADING 'FIM'                 JUSTIFY CENTER 
 COL minutes      FORMAT 9999             HEADING 'MIN'                 JUSTIFY CENTER  
 COL executions   FORMAT 999999           HEADING 'EXEC'                JUSTIFY CENTER 
 COL rrows        FORMAT 99999999         HEADING 'LINHAS'              JUSTIFY CENTER 
-COL avg_duration FORMAT a10              HEADING 'MÉDIO (s)'           JUSTIFY CENTER 
+COL avg_duration FORMAT a12              HEADING 'MÉDIO (s)'           JUSTIFY CENTER 
 COL p_hash_value FORMAT 9999999999       HEADING 'PLAN HASH'           JUSTIFY CENTER
 COL rows         FORMAT 9999999999       HEADING 'ROWS'                JUSTIFY CENTER
 COL diskread     FORMAT 9999999999       HEADING 'DISK READ/EXEC'      JUSTIFY CENTER
 COL buffergets   FORMAT 9999999999       HEADING 'BUFFER GET/EXEC'     JUSTIFY CENTER
-COL px_servers   FORMAT 99               HEADING 'PX'                  JUSTIFY CENTER
+COL px_servers   FORMAT 9999             HEADING 'PX'                  JUSTIFY CENTER
 COL con_id       FORMAT a03              HEADING 'CDB'                 JUSTIFY CENTER
+
 
 SET COLSEP '|'
 SELECT 
     a.instance_number AS inst_id,
 	lpad(to_char(a.con_id),3,' ')  con_id, -- a.dbid
-    a.snap_id,
+    a.snap_id, 
     a.sql_id,
     a.plan_hash_value AS p_hash_value,
-    a.sql_profile,
+    substr(a.sql_profile,1,28)  sql_profile,
     a.loads_delta,
     a.cpu_time_delta / 60000 AS cpu_time,
     TO_CHAR(b.begin_interval_time, 'ddMMYY hh24:mi') AS btime,
@@ -99,10 +100,7 @@ SELECT
     a.px_servers_execs_delta AS px_servers,
     a.executions_delta AS executions,
     --ROUND(a.elapsed_time_delta / 1000000 / GREATEST(a.executions_delta, 1), 7) AS agv_duration
-		trim(TO_CHAR(
-		  ROUND(a.elapsed_time_delta / 1000000 / GREATEST(a.executions_delta, 1), 7),
-		  '00.0000000'
-		)) AS avg_duration
+		trim(TO_CHAR(ROUND(a.elapsed_time_delta / 1000000 / GREATEST(a.executions_delta, 1), 7),'FM0000.0000000')) AS avg_duration
 FROM dba_hist_sqlstat a
 JOIN dba_hist_snapshot b
     ON a.snap_id = b.snap_id
@@ -125,29 +123,20 @@ PROMPT
 
 
 
+---------     update dba_hist_sqlstat
+---------     set sql_profile = 'guina_f4uu1bp8udxy0_2390458381'
+---------     where sql_id = 'f4uu1bp8udxy0'
+---------     and sql_profile like '%guina_f4uu1bp8udxy0%';
+---------     commit work;
 
-----select a.instance_number inst_id,
-----       --a.snap_id,
-----       a.sql_id, 
-----       a.plan_hash_value as p_hash_value,
-----       a.SQL_PROFILE,
-----       a.LOADS_DELTA,
-----       a.CPU_TIME_DELTA / 60000 as CPU_TIME,
-----       a.ELAPSED_TIME_DELTA / 60000 as ELAPSED_TIME,
-----       to_char(begin_interval_time, 'ddMMYY hh24:mi') btime,
-----       to_char(END_INTERVAL_TIME, 'hh24:mi')   etime,	   
-----       abs(extract(minute from(end_interval_time - begin_interval_time)) +
-----           extract(hour from(end_interval_time - begin_interval_time)) * 60 +
-----           extract(day from(end_interval_time - begin_interval_time)) * 24 * 60) minutes,
-----       	   a.ROWS_PROCESSED_DELTA RROWS,
-----        round((DISK_READS_delta)/greatest((executions_delta),1),0) DiskRead,
-----        round((BUFFER_GETS_delta)/greatest((executions_delta),1),0) BufferGets,	  
-----        A.PX_SERVERS_EXECS_DELTA Px_Servers,		
-----		executions_delta executions,
-----        round(ELAPSED_TIME_delta / 1000000 / greatest(executions_delta, 1), 7) AGV_DURATION
-----  from dba_hist_SQLSTAT a, dba_hist_snapshot b
----- where sql_id = '&&sql_id2'
-----   and a.snap_id = b.snap_id
-----   and a.instance_number = b.instance_number
-----   and begin_interval_time > trunc(sysdate - &&days)
----- order by a.snap_id desc, begin_interval_time desc, a.instance_number
+---------     update WRH$_SQLSTAT 
+---------     set sql_profile = 'guina_f4uu1bp8udxy0_2390458381'
+---------     where sql_id = 'f4uu1bp8udxy0'
+---------     and sql_profile like '%guina_f4uu1bp8udxy0%';
+---------     commit work;
+
+
+---------     select count(1) from WRH$_SQLSTAT 
+---------     where sql_id = 'f4uu1bp8udxy0'
+---------     and sql_profile like '%guina_f4uu1bp8udxy0_23904583%';
+---------     commit work;
