@@ -65,6 +65,7 @@ FROM (
     )
     GROUP BY sql_id
     HAVING COUNT(1) > 0
+ 	order by 1 desc
 )
 WHERE ROWNUM <= 3;
 SET TERMOUT ON;
