@@ -1,3 +1,4 @@
+
 #!/usr/bin/env perl
 #
 # Bertrand Drouvot
@@ -15,14 +16,66 @@
 #----------------------------------------------------------------#
 
 BEGIN {
- die "ORACLE_HOME not set\n" unless $ENV{ORACLE_HOME};
- unless ($ENV{OrAcLePeRl}) {
- $ENV{OrAcLePeRl} = "$ENV{ORACLE_HOME}/perl";
- $ENV{PERL5LIB} = "$ENV{PERL5LIB}:$ENV{OrAcLePeRl}/lib:$ENV{OrAcLePeRl}/lib/site_perl";
- $ENV{LD_LIBRARY_PATH} = "$ENV{LD_LIBRARY_PATH}:$ENV{ORACLE_HOME}/lib32:$ENV{ORACLE_HOME}/lib";
- exec "$ENV{OrAcLePeRl}/bin/perl", $0, @ARGV;
- }
+#----------------------------------------------------------------#
+# AUTODETECCAO DE ORACLE_HOME
+# Autor da modificacao : Roberto Fernandes Sobrinho (DBA Sobrinho)
+#                        dbasobrinho.com.br
+# Data                 : 2026/05
+# Script original       : Bertrand Drouvot (os_cpu_per_db.pl)
+#
+# O script original morria com "ORACLE_HOME not set" quando rodado
+# sem oraenv (ex: direto como root). Como o servidor tem varios
+# bancos com ORACLE_HOMEs diferentes, e o script so precisa de QUALQUER
+# home valido (ele nao conecta em banco, so usa o perl da Oracle e o ps),
+# este bloco descobre o home automaticamente a partir do PMON do ASM:
+#   1. roda "ps -ef | grep [a]sm_pmon" para achar o PID do +ASM
+#   2. le /proc/PID/environ (variaveis de ambiente do processo)
+#   3. extrai a variavel ORACLE_HOME de la
+#
+# Se ORACLE_HOME ja estiver setado, o bloco e ignorado e usa o seu.
+# Se nao achar o ASM, cai no die original como rede de seguranca.
+#----------------------------------------------------------------#
+unless ($ENV{ORACLE_HOME}) {
+   my @asmproc = `ps -ef | grep [a]sm_pmon`;
+   foreach my $line (@asmproc) {
+     my @f = split(" ", $line);
+     my $pid = $f[1];                            # campo 2 do ps -ef = PID
+     if (-r "/proc/$pid/environ") {
+       open(my $env, "<", "/proc/$pid/environ") or next;
+       local $/;                                 # slurp mode: le o arquivo inteiro
+       my $data = <$env>;
+       close($env);
+       foreach my $kv (split(/\0/, $data)) {     # environ vem separado por null byte
+         if ($kv =~ /^ORACLE_HOME=(.+)$/) {
+           $ENV{ORACLE_HOME} = $1;
+           last;
+         }
+       }
+     }
+     last if $ENV{ORACLE_HOME};
+   }
+   print "INFO: ORACLE_HOME autodetectado via ASM PMON: $ENV{ORACLE_HOME}\n" if $ENV{ORACLE_HOME};
 }
+
+die "ORACLE_HOME not set (e nao foi possivel detectar via ASM PMON)\n" unless $ENV{ORACLE_HOME};
+
+unless ($ENV{OrAcLePeRl}) {
+$ENV{OrAcLePeRl} = "$ENV{ORACLE_HOME}/perl";
+$ENV{PERL5LIB} = "$ENV{PERL5LIB}:$ENV{OrAcLePeRl}/lib:$ENV{OrAcLePeRl}/lib/site_perl";
+$ENV{LD_LIBRARY_PATH} = "$ENV{LD_LIBRARY_PATH}:$ENV{ORACLE_HOME}/lib32:$ENV{ORACLE_HOME}/lib";
+exec "$ENV{OrAcLePeRl}/bin/perl", $0, @ARGV;
+}
+}
+ 
+####BEGIN {
+#### die "ORACLE_HOME not set\n" unless $ENV{ORACLE_HOME};
+#### unless ($ENV{OrAcLePeRl}) {
+#### $ENV{OrAcLePeRl} = "$ENV{ORACLE_HOME}/perl";
+#### $ENV{PERL5LIB} = "$ENV{PERL5LIB}:$ENV{OrAcLePeRl}/lib:$ENV{OrAcLePeRl}/lib/site_perl";
+#### $ENV{LD_LIBRARY_PATH} = "$ENV{LD_LIBRARY_PATH}:$ENV{ORACLE_HOME}/lib32:$ENV{ORACLE_HOME}/lib";
+#### exec "$ENV{OrAcLePeRl}/bin/perl", $0, @ARGV;
+#### }
+####}
 
 use Time::Local;
 
