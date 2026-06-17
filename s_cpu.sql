@@ -11,6 +11,8 @@
 -- | Modificacao: 1.0 - 16/06/2026 - rfsobrinho - Versao inicial (snapshot duplo via PL/SQL)   |
 -- |              1.1 - 16/06/2026 - rfsobrinho - Intervalo via parametro @s_cpu N (1 a 60)    |
 -- |              1.2 - 16/06/2026 - rfsobrinho - ACCEPT com default 10 (Enter usa 10)         |
+-- |              1.3 - 17/06/2026 - rfsobrinho - SLEEP universal (DBMS_SESSION 18c+ com       |
+-- |                    fallback para DBMS_LOCK em versoes antigas, sem editar o script)       |
 -- +-------------------------------------------------------------------------------------------+
 -- |                                                                https://dbasobrinho.com.br |
 -- +-------------------------------------------------------------------------------------------+
@@ -43,10 +45,10 @@ PROMPT | https://github.com/dbasobrinho/g_gold/blob/main/s_cpu.sql              
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT | Script   : CPU do MOMENTO (delta DB CPU)                         +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT | Instancia: &current_instance                                     |d|b|a|s|o|b|r|i|n|h|o|  |
-PROMPT | Versao   : 1.2                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
+PROMPT | Versao   : 1.3                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT | Medindo CPU por &intervalo segundos . . . aguarde                                   
-PROMPT +-------------------------------------------------------------------------------------------+
+
 
 DECLARE
   c_int   CONSTANT NUMBER := &intervalo;          -- segundos do intervalo (ja capado em 1..60)
@@ -96,7 +98,13 @@ BEGIN
      g_snap1(r.inst_id||'#'||r.sid) := r.value;
   END LOOP;
 
-  DBMS_LOCK.SLEEP(c_int);              -- 18c+: DBMS_SESSION.SLEEP(c_int);
+  -- SLEEP universal: tenta DBMS_SESSION.SLEEP (18c+), cai para DBMS_LOCK.SLEEP (legado)
+  BEGIN
+     EXECUTE IMMEDIATE 'BEGIN DBMS_SESSION.SLEEP(:s); END;' USING c_int;
+  EXCEPTION
+     WHEN OTHERS THEN
+        EXECUTE IMMEDIATE 'BEGIN DBMS_LOCK.SLEEP(:s); END;' USING c_int;
+  END;
 
   -- ===================== SNAPSHOT 2 + DELTA ==========================
   FOR r IN (
@@ -185,6 +193,7 @@ BEGIN
   END LOOP;
 
   -- ============================ SAIDA ================================
+  DBMS_OUTPUT.PUT_LINE('+-------------------------------------------------------------------------------------------+');
   DBMS_OUTPUT.PUT_LINE('| TOP CPU ('||c_int||'s): '||NVL(v_line,'(nada consumindo CPU no intervalo)'));
   DBMS_OUTPUT.PUT_LINE('+-------------------------------------------------------------------------------------------+');
   DBMS_OUTPUT.PUT_LINE('. . . ');
