@@ -1,6 +1,6 @@
 -- |
 -- +-------------------------------------------------------------------------------------------+
--- | Objetivo   : Active Locked Tree (qualquer enqueue de bloqueio)                            |
+-- | Objetivo   : Active Locked Tree (qualquer enqueue de bloqueio)                            | 
 -- | Criador    : Roberto Fernandes Sobrinho                                                   |
 -- | Data       : 25/10/2018                                                                   |
 -- | Exemplo    : @locktree.sql                                                                |
