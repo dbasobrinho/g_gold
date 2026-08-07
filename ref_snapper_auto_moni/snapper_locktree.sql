@@ -39,7 +39,6 @@ EXEC dbms_application_info.set_module( module_name => 'locktree[locktree.sql]', 
 COLUMN current_instance NEW_VALUE current_instance NOPRINT;
 SELECT rpad(sys_context('USERENV', 'INSTANCE_NAME'), 17) current_instance FROM dual;
 SET TERMOUT ON;
-SPOOL locktree.out
 PROMPT
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT | https://github.com/dbasobrinho/g_gold/blob/main/locktree.sql                              |
@@ -53,7 +52,7 @@ SET ECHO        OFF
 SET FEEDBACK    ON
 SET HEADING     ON
 SET LINES       220
-SET PAGES       300
+SET PAGES       320 
 SET TERMOUT     ON
 SET TIMING      OFF
 SET TRIMOUT     ON
@@ -146,6 +145,5 @@ SELECT level AS lvl,
                        AND x.holder_inst = s.inst_id)
  ORDER SIBLINGS BY s.sid
 /
-SPOOL OFF
 SET LINES       220
-SET PAGES       300
+SET PAGES       320 

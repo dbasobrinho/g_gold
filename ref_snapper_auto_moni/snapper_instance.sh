@@ -3,7 +3,7 @@
 # Assunto    : Execução do Snapper em uma ou mais instâncias Oracle do servidor
 # Autor      : Roberto Fernandes Sobrinho (todos os scripts, exceto o snapper_instance.sql)
 # Blog       : https://dbasobrinho.com.br
-# Data       : 06/11/2020
+# Data       : 06/11/2020 
 #
 # Observação:
 # - O script `snapper_instance.sql` utilizado neste processo foi escrito por **Tanel Poder**
@@ -123,6 +123,9 @@ spool ${LOG} APPEND
 @snapper_hora.sql
 @snapper_instance.sql ash=inst_id+sql_id+event+wait_class+blocking_session 10 06 "select inst_id,sid from gv\$session where status = 'ACTIVE' and type = 'USER' and sql_id = sql_id"
 @snapper_s.sql
+@snapper_long.sql
+@snapper_locktree.sql
+@snapper_balance.sql
 ----->>> COLUMN PSEG NEW_VALUE PSEG NOPRINT;
 ----->>> select round((dbms_utility.get_time - :v_start )/100,2) PSEG from  dual;
 ----->>> PROMPT +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
