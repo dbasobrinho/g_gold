@@ -1,5 +1,4 @@
-
-#!/bin/bash
+#!/bin/bash  
 #============================================================================================================
 # Referência  : snapper_cpu_loop.sh
 # Assunto     : Execução contínua do Snapper CPU em loop diário
@@ -14,7 +13,7 @@
 #
 # Modo de uso:
 # - O script deve ser agendado para execução via crontab logo após a meia-noite, exemplo:
-#     10 00 * * * /u01/app/oracle/ADMDBA/MONI/snapper_cpu_loop.sh > /dev/null 2>&1
+#     10 00 * * * /u01/app/oracle/diag/TVTDBA/snapper/snapper_cpu_loop.sh > /dev/null 2>&1
 #
 # Observações:
 # - O caminho do diretório onde está o snapper_cpu.sh pode ser alterado abaixo conforme o ambiente
@@ -22,11 +21,9 @@
 #============================================================================================================
 
 # Caminho do diretório onde está o snapper_cpu.sh
-SCRIPT_PATH="/u01/app/oracle/ADMDBA/MONI"
-
+SCRIPT_PATH="/u01/app/oracle/diag/TVTDBA/snapper"
 # Caminho dos logs (serão criados aqui, se ainda não existirem)
 LOG_DIR="$SCRIPT_PATH/logs_snapper"
-
 # Quantidade de dias para manter os logs (padrão: 10 dias)
 RETENTION_DAYS=10
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash   
 ###############################################################################
 # Script......: monitor_cpu.sh
 # Finalidade..: Verifica uso de CPU por instância via logs do Snapper
@@ -12,7 +12,7 @@
 #   - Exibe apenas se NB_CPU > valor informado pelo usuário
 #   - Alinha cabeçalho dinamicamente
 ###############################################################################
- 
+  
 echo
 echo "================================================================================="
 echo "Este script verifica o uso de CPU por instância baseado nos logs do Snapper."

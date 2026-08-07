@@ -1,5 +1,4 @@
-
-#!/bin/bash
+#!/bin/bash   
 # ==============================================================================
 # CPU Utilization Statistics plugin for GUINA
 #

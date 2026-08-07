@@ -1,5 +1,4 @@
-
-#!/bin/bash
+#!/bin/bash  
 #============================================================================================================
 # Referencia : snapper_cpu.sh
 # Assunto    : Execução do Snapper CPU para análise de consumo por processo no servidor
@@ -14,7 +13,7 @@
 #
 # Modo de uso:
 # - O script deve ser executado diretamente via shell:
-#     sh $ORACLE_BASE/ADMDBA/MONI/snapper_cpu.sh
+#     sh /u01/app/oracle/diag/TVTDBA/snapper/snapper_cpu.sh
 #
 # Requisitos:
 # - Scripts auxiliares: snapper_cpu_stats.sh, snapper_cpu.pl (renomeado a partir de cpu_per_db_sort.pl)
@@ -48,8 +47,7 @@
 #============================================================================================================
 
 # Caminho do diretório onde está o snapper_cpu.sh
-SCRIPT_PATH="/u01/app/oracle/ADMDBA/MONI"
-
+SCRIPT_PATH="/u01/app/oracle/diag/TVTDBA/snapper"
 # Caminho dos logs (serão criados aqui, se ainda não existirem)
 LOG_DIR="$SCRIPT_PATH/logs_snapper"
 

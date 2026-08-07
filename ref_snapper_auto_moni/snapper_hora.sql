@@ -1,5 +1,5 @@
-SET COLSEP '|'
-set linesize 600
+SET COLSEP '|'  
+set linesize 600 
 set pages  120
 col TIME_INTERVAL           FORMAT  a19
 col "SQL_SERVICE_MS"        format  999G990D99   justify right

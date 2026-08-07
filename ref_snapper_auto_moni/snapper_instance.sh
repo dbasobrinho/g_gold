@@ -1,9 +1,9 @@
-#============================================================================================================
+#============================================================================================================ 
 # Referencia : snapper_instance.sh
 # Assunto    : Execução do Snapper em uma ou mais instâncias Oracle do servidor
 # Autor      : Roberto Fernandes Sobrinho (todos os scripts, exceto o snapper_instance.sql)
 # Blog       : https://dbasobrinho.com.br
-# Data       : 06/11/2020 
+# Data       : 06/11/2020
 #
 # Observação:
 # - O script `snapper_instance.sql` utilizado neste processo foi escrito por **Tanel Poder**
@@ -37,8 +37,13 @@
 # - Altere a variável ORATOP para refletir o caminho correto do seu ambiente.
 #============================================================================================================
 
+# Caminho do diretório onde está o snapper_cpu.sh
+SCRIPT_PATH="/u01/app/oracle/diag/TVTDBA/snapper"
+# Caminho dos logs (serão criados aqui, se ainda não existirem)
+LOG_DIR="$SCRIPT_PATH/logs_snapper"
 # Caminho fixo do oratop (ajuste conforme seu ambiente)
-ORATOP="/u01/app/oracle/ADMDBA/MONI/oratop.LNX.RDBMS11"
+ORATOP="/u01/app/oracle/diag/TVTDBA/snapper/oratop"
+
 
 # Verifica se o argumento foi informado
 if [ -z "$1" ]; then
@@ -84,12 +89,12 @@ HO=`echo "$HO" | rev | cut -c6- | rev`
 fi
 HO=`echo $HO |sed 's/ /\(&\)/'`
 ##
-cd $ORACLE_BASE/ADMDBA/MONI
+cd $SCRIPT_PATH
 export DATA=`date +%Y%m%d%H`
 if [ ! -d ./logs_snapper ]; then
   mkdir -p ./logs_snapper
 fi
-export LOG=./logs_snapper/${DATA}_snapper_${instance}.log
+export LOG=$LOG_DIR/${DATA}_snapper_${instance}.log
 export DTC=`date +%d/%b/%Y_%k:%M:%S`
 echo "==========================================================================="  2>&1 |tee -a $LOG
 echo " INICIO SNAPPER INSTANCE . . . . : "$instance                                 2>&1 |tee -a $LOG
@@ -135,13 +140,24 @@ spool ${LOG} APPEND
 exit
 EOF
 
+export TERM=${TERM:-xterm}
 if [ -x "$ORATOP" ]; then
-  echo "==========================================================================="  2>&1 |tee -a $LOG
-  $ORATOP -d -bfs -n 1 -i 1 / as sysdba | perl -pe 's/\e\[[0-9;?]*[a-zA-Z]//g' | tr -d '\r' | sed 's/^[[:space:]]\+//' | tee -a "$LOG"
-  echo "==========================================================================="  2>&1 |tee -a $LOG
-  echo "==========================================================================="  2>&1 |tee -a $LOG 
-  $ORATOP -d -bf  -n 1 -i 1 / as sysdba | perl -pe 's/\e\[[0-9;?]*[a-zA-Z]//g' | tr -d '\r' | sed 's/^[[:space:]]\+//' | tee -a "$LOG"
-  echo "==========================================================================="  2>&1 |tee -a $LOG
+  TMP1=$(mktemp -u)
+  TMP2=$(mktemp -u)
+
+  echo "==========================================================================="  | tee -a "$LOG"
+  sleep 6 | script -q -c "$ORATOP -bfsr -n 1 -i 3 -o $TMP1 / as sysdba" /dev/null >/dev/null 2>>"$LOG"
+  perl -pe 's/\e\[[0-9;?]*[a-zA-Z]//g' "$TMP1" | tr -d '\r' | sed 's/^[[:space:]]\+//' \
+    | grep -vE '^(oratop: Release|Copyright|Connecting|spooling to file)' | tee -a "$LOG"
+  echo "==========================================================================="  | tee -a "$LOG"
+  echo "==========================================================================="  | tee -a "$LOG"
+  sleep 6 | script -q -c "$ORATOP -bfr -n 1 -i 3 -o $TMP2 / as sysdba" /dev/null >/dev/null 2>>"$LOG"
+  perl -pe 's/\e\[[0-9;?]*[a-zA-Z]//g' "$TMP2" | tr -d '\r' | sed 's/^[[:space:]]\+//' \
+    | grep -viE 'INA[[:space:]]+WAI|Idle' \
+    | grep -vE '^(oratop: Release|Copyright|Connecting|spooling to file)' | tee -a "$LOG"
+  echo "==========================================================================="  | tee -a "$LOG"
+
+  rm -f "$TMP1" "$TMP2"
 fi
 
 export DTC=`date +%d/%b/%Y_%k:%M:%S`
@@ -157,4 +173,3 @@ echo " |F|I|M|                    |E| |Z|A|S| |.| |.| |.| |D|B|A|S|O|B|R|I|N|H|O
 echo " +-+-+-+                    +-+ +-+-+-+ +-+ +-+ +-+ +-+-+-+-+-+-+-+-+-+-+-+ " 2>&1 |tee -a $LOG
 echo ""                                                                             2>&1 |tee -a $LOG
 done
-

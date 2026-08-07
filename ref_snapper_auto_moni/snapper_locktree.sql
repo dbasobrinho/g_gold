@@ -1,4 +1,4 @@
--- | 
+-- |    
 -- +-------------------------------------------------------------------------------------------+
 -- | Objetivo   : Active Locked Tree (qualquer enqueue de bloqueio)                            |
 -- | Criador    : Roberto Fernandes Sobrinho                                                   |

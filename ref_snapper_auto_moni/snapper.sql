@@ -1,4 +1,4 @@
--- File name:   snapper.sql (Oracle Session Snapper v4)
+-- File name:   snapper.sql (Oracle Session Snapper v4)   
 -- Purpose:     An easy to use Oracle session-level performance measurement tool
 --              which does NOT require any database changes nor creation of any
 --              database objects!

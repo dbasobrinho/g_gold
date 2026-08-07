@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash   
 #============================================================================================================
 # Referencia : snapper_instance_loop.sh
 # Assunto    : Inicia o Snapper em loop contínuo, com execução a cada 10 segundos
@@ -32,10 +32,9 @@
 # Dias de retenção dos logs (ajuste conforme necessidade)
 RETENTION_DAYS=10
 
-# Caminho do diretório onde está o snapper_instance.sh
-SCRIPT_PATH="/u01/app/oracle/ADMDBA/MONI"
-
-# Caminho dos logs
+# Caminho do diretório onde está o snapper_cpu.sh
+SCRIPT_PATH="/u01/app/oracle/diag/TVTDBA/snapper"
+# Caminho dos logs (serão criados aqui, se ainda não existirem)
 LOG_DIR="$SCRIPT_PATH/logs_snapper"
 
 # Corrige o erro de terminal somente se for um terminal interativo

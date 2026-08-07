@@ -1,6 +1,6 @@
-for mes in 06 07; do
+for mes in 06 07; do  
   if [ "$mes" = "06" ]; then
-    dias=$(seq -w 26 30)
+    dias=$(seq -w 26 30) 
   else
     dias=$(seq -w 1 25)
   fi
