@@ -1,3 +1,0 @@
-purgeLogs: Cleanup traces, logs in one command (Doc ID 2081655.1)
-
-https://support.oracle.com/rs?type=doc&amp;id=2081655.1

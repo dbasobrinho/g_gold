@@ -1,8 +1,0 @@
-06 00 * * * perl /root/purgeLogs -orcl 15 -tfa 15 -osw 15 -oda 15 -aud -lsnr > /dev/null 2>&1
-20 00 * * * perl purgeLogs -extra '/tmp:10,/var/log:10'                      > /dev/null 2>&1
-    
-	
-	
-06 00 * * * perl /work/manutencao/scripts/sh/purgeLogs -orcl 20 -tfa 20 -osw 20 -oda 20 -aud -lsnr > /dev/null 2>&1
-
-
