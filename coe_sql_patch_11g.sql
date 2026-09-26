@@ -28,7 +28,7 @@ EXEC dbms_application_info.set_module( module_name => 'patch[coe_sql_patch_11g.s
 COLUMN current_instance NEW_VALUE current_instance NOPRINT;
 SELECT rpad(sys_context('USERENV', 'INSTANCE_NAME'), 17) current_instance FROM dual;
 COLUMN db_version NEW_VALUE db_version NOPRINT;
-SELECT version db_version FROM v$instance;
+SELECT rpad(version, 10) db_version FROM v$instance;
 SET TERMOUT ON;
 
 PROMPT
@@ -38,7 +38,7 @@ PROMPT +------------------------------------------------------------------------
 PROMPT | Script   : SQL Patch por SQL_ID (11g/12.1)                       +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT | Instancia: &current_instance                                     |d|b|a|s|o|b|r|i|n|h|o|  |
 PROMPT | Versao   : 2.1                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
-PROMPT | Banco    : &db_version (para 11g e 12.1)                                                  |
+PROMPT | Banco    : &db_version (para 11g e 12.1)                                                   |
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT | Este script NAO cria o patch. Ele gera dois arquivos para voce revisar e executar:        |
 PROMPT |   coe_sql_patch_<sql_id>_<data>_create.sql  (cria o patch e valida)                       |
@@ -96,7 +96,7 @@ COL created           FORMAT a20           HEADING 'CRIADO|EM'         JUSTIFY C
 SPOOL &&arq_base..out
 
 PROMPT +-------------------------------------------------------------------------------------------+
-PROMPT | 1) Texto do SQL_ID &&sql_id (primeiros 200 caracteres)                                    |
+PROMPT | 1) Texto do SQL_ID &&sql_id (primeiros 200 caracteres)                               |
 PROMPT +-------------------------------------------------------------------------------------------+
 SELECT SUBSTR(sql_text, 1, 200) sql_text
   FROM gv$sqlarea
@@ -199,9 +199,9 @@ SET PAGES       300
 PROMPT
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT | Arquivos gerados (NADA foi executado no banco):                                           |
-PROMPT |   Log desta analise : &&arq_base..out                                                     |
-PROMPT |   Cria o patch      : &&arq_base._create.sql                                              |
-PROMPT |   Remove o patch    : &&arq_base._drop.sql                                                |
+PROMPT |   Log desta analise : &&arq_base..out                     |
+PROMPT |   Cria o patch      : &&arq_base._create.sql              |
+PROMPT |   Remove o patch    : &&arq_base._drop.sql                |
 PROMPT | Revise o _create.sql, execute com @ e NAO esqueca do _drop.sql depois da coleta.          |
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT
