@@ -3,7 +3,7 @@
 -- | Objetivo   : Gera o script de ROLES (S/I/U/D/E) e DDL por schema para um usuario          |
 -- | Criador    : Roberto Fernandes Sobrinho                                                   |
 -- | Data       : 11/09/2026                                                                   |
--- | Exemplo    : @gera_grants_role_por_schema_para_user.sql ANDRE_SANTOS FATP,FAT,RSE,TRSE    |
+-- | Exemplo    : @gera_grants_role_por_schema_para_user.sql ANDRE_SANTOS FATP,FAT,RSE,TRSE    | 
 -- | Arquivo    : gera_grants_role_por_schema_para_user.sql                                    |
 -- | Referncia  : Roles R_<SCHEMA>_#S/#I/#U/#D/#E = SELECT/INSERT/UPDATE/DELETE/EXECUTE        |
 -- | Modificacao: 1.0 - 11/09/2026 - rfsobrinho - Versao inicial                               |
