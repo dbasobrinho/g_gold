@@ -13,6 +13,7 @@
 -- | Modificacao: 1.0 - 26/05/2020 - rfsobrinho - Versao inicial (tun_..._11_menor)            |
 -- |              2.0 - 26/09/2026 - rfsobrinho - Padrao dbasobrinho, renomeado para coe_      |
 -- |              2.1 - 26/09/2026 - rfsobrinho - Nao cria mais o patch: gera _create e _drop  |
+-- |              2.2 - 02/10/2026 - rfsobrinho - Corrige _create/_drop: PROMPT tirava o ';'   |
 -- +-------------------------------------------------------------------------------------------+
 -- |                                                                https://dbasobrinho.com.br |
 -- +-------------------------------------------------------------------------------------------+
@@ -37,7 +38,7 @@ PROMPT | https://github.com/dbasobrinho/g_gold/blob/master/coe_sql_patch_11g.sql
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT | Script   : SQL Patch por SQL_ID (11g/12.1)                       +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT | Instancia: &current_instance                                     |d|b|a|s|o|b|r|i|n|h|o|  |
-PROMPT | Versao   : 2.1                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
+PROMPT | Versao   : 2.2                                                   +-+-+-+-+-+-+-+-+-+-+-+  |
 PROMPT | Banco    : &db_version (para 11g e 12.1)                                                   |
 PROMPT +-------------------------------------------------------------------------------------------+
 PROMPT | Este script NAO cria o patch. Ele gera dois arquivos para voce revisar e executar:        |
@@ -134,62 +135,73 @@ SPOOL OFF
 SET FEEDBACK    OFF
 SET HEADING     OFF
 SET PAGES       0
+SET TAB         OFF
+SET LINES       400
+COL txt FORMAT a400
 SET TERMOUT     OFF
 
 SPOOL &&arq_base._create.sql
-PROMPT -- +--- gerado por coe_sql_patch_11g.sql em &db_version / &current_instance
-PROMPT -- +--- revise antes de executar. Rodar como DBA no container onde o SQL executa.
-PROMPT SET ECHO ON
-PROMPT SET SERVEROUTPUT ON
-PROMPT SET LINES 250
-PROMPT SET PAGES 100
-PROMPT SET HEADSEP '|'
-PROMPT SET COLSEP '|'
-PROMPT SPOOL &&arq_base._create.out
-PROMPT DECLARE
-PROMPT   l_sql_text CLOB;
-PROMPT BEGIN
-PROMPT   SELECT sql_fulltext
-PROMPT     INTO l_sql_text
-PROMPT     FROM gv$sqlarea
-PROMPT    WHERE sql_id = '&&sql_id'
-PROMPT      AND ROWNUM = 1;
-PROMPT   SYS.DBMS_SQLDIAG_INTERNAL.I_CREATE_PATCH(
-PROMPT     sql_text  => l_sql_text,
-PROMPT     hint_text => '&&hint_text',
-PROMPT     name      => 'GUINA_PATCH_&&sql_id');
-PROMPT   DBMS_OUTPUT.PUT_LINE('SQL Patch criado: GUINA_PATCH_&&sql_id');
-PROMPT END;
-PROMPT /
-PROMPT SET SERVEROUTPUT OFF
-PROMPT COL name     FORMAT a35 HEADING 'PATCH|-'    JUSTIFY CENTER
-PROMPT COL status   FORMAT a10 HEADING 'STATUS|-'   JUSTIFY CENTER
-PROMPT COL category FORMAT a12 HEADING 'CATEGORY|-' JUSTIFY CENTER
-PROMPT COL created  FORMAT a20 HEADING 'CRIADO|EM'  JUSTIFY CENTER
-PROMPT SELECT name, status, category, TO_CHAR(created, 'DD/MM/YY HH24:MI:SS') created
-PROMPT   FROM dba_sql_patches
-PROMPT  WHERE name = 'GUINA_PATCH_&&sql_id';
-PROMPT SET ECHO OFF
-PROMPT SPOOL OFF
-PROMPT PROMPT
-PROMPT PROMPT Confira acima se o patch foi criado. O cursor atual e invalidado: aguarde a proxima execucao do SQL e rode:
-PROMPT PROMPT   SELECT inst_id, child_number, sql_patch FROM gv$sql WHERE sql_id = '&&sql_id';
-PROMPT PROMPT   SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR('&&sql_id', <child>, 'ALLSTATS LAST'));
-PROMPT PROMPT Depois de coletar: @&&arq_base._drop.sql
+SELECT txt
+  FROM (
+        SELECT   1 n, q'[-- +--- gerado por coe_sql_patch_11g.sql em &db_version / &current_instance]' txt FROM dual UNION ALL
+        SELECT   2 n, q'[-- +--- revise antes de executar. Rodar como DBA no container onde o SQL executa.]' txt FROM dual UNION ALL
+        SELECT   3 n, q'[SET ECHO ON]' txt FROM dual UNION ALL
+        SELECT   4 n, q'[SET SERVEROUTPUT ON]' txt FROM dual UNION ALL
+        SELECT   5 n, q'[SET LINES 250]' txt FROM dual UNION ALL
+        SELECT   6 n, q'[SET PAGES 100]' txt FROM dual UNION ALL
+        SELECT   7 n, q'[SET HEADSEP '|']' txt FROM dual UNION ALL
+        SELECT   8 n, q'[SET COLSEP '|']' txt FROM dual UNION ALL
+        SELECT   9 n, q'[SPOOL &&arq_base._create.out]' txt FROM dual UNION ALL
+        SELECT  10 n, q'[DECLARE]' txt FROM dual UNION ALL
+        SELECT  11 n, q'[  l_sql_text CLOB;]' txt FROM dual UNION ALL
+        SELECT  12 n, q'[BEGIN]' txt FROM dual UNION ALL
+        SELECT  13 n, q'[  SELECT sql_fulltext]' txt FROM dual UNION ALL
+        SELECT  14 n, q'[    INTO l_sql_text]' txt FROM dual UNION ALL
+        SELECT  15 n, q'[    FROM gv$sqlarea]' txt FROM dual UNION ALL
+        SELECT  16 n, q'[   WHERE sql_id = '&&sql_id']' txt FROM dual UNION ALL
+        SELECT  17 n, q'[     AND ROWNUM = 1;]' txt FROM dual UNION ALL
+        SELECT  18 n, q'[  SYS.DBMS_SQLDIAG_INTERNAL.I_CREATE_PATCH(]' txt FROM dual UNION ALL
+        SELECT  19 n, q'[    sql_text  => l_sql_text,]' txt FROM dual UNION ALL
+        SELECT  20 n, q'[    hint_text => '&&hint_text',]' txt FROM dual UNION ALL
+        SELECT  21 n, q'[    name      => 'GUINA_PATCH_&&sql_id');]' txt FROM dual UNION ALL
+        SELECT  22 n, q'[  DBMS_OUTPUT.PUT_LINE('SQL Patch criado: GUINA_PATCH_&&sql_id');]' txt FROM dual UNION ALL
+        SELECT  23 n, q'[END;]' txt FROM dual UNION ALL
+        SELECT  24 n, q'[/]' txt FROM dual UNION ALL
+        SELECT  25 n, q'[SET SERVEROUTPUT OFF]' txt FROM dual UNION ALL
+        SELECT  26 n, q'[COL name     FORMAT a35 HEADING 'PATCH|-'    JUSTIFY CENTER]' txt FROM dual UNION ALL
+        SELECT  27 n, q'[COL status   FORMAT a10 HEADING 'STATUS|-'   JUSTIFY CENTER]' txt FROM dual UNION ALL
+        SELECT  28 n, q'[COL category FORMAT a12 HEADING 'CATEGORY|-' JUSTIFY CENTER]' txt FROM dual UNION ALL
+        SELECT  29 n, q'[COL created  FORMAT a20 HEADING 'CRIADO|EM'  JUSTIFY CENTER]' txt FROM dual UNION ALL
+        SELECT  30 n, q'[SELECT name, status, category, TO_CHAR(created, 'DD/MM/YY HH24:MI:SS') created]' txt FROM dual UNION ALL
+        SELECT  31 n, q'[  FROM dba_sql_patches]' txt FROM dual UNION ALL
+        SELECT  32 n, q'[ WHERE name = 'GUINA_PATCH_&&sql_id';]' txt FROM dual UNION ALL
+        SELECT  33 n, q'[SET ECHO OFF]' txt FROM dual UNION ALL
+        SELECT  34 n, q'[SPOOL OFF]' txt FROM dual UNION ALL
+        SELECT  35 n, q'[PROMPT]' txt FROM dual UNION ALL
+        SELECT  36 n, q'[PROMPT Confira acima se o patch foi criado. O cursor atual e invalidado: aguarde a proxima execucao do SQL e rode:]' txt FROM dual UNION ALL
+        SELECT  37 n, q'[PROMPT   SELECT inst_id, child_number, sql_patch FROM gv$sql WHERE sql_id = '&&sql_id';]' txt FROM dual UNION ALL
+        SELECT  38 n, q'[PROMPT   SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR('&&sql_id', <child>, 'ALLSTATS LAST'));]' txt FROM dual UNION ALL
+        SELECT  39 n, q'[PROMPT Depois de coletar: @&&arq_base._drop.sql]' txt FROM dual
+       )
+ ORDER BY n;
 SPOOL OFF
 
 SPOOL &&arq_base._drop.sql
-PROMPT -- +--- gerado por coe_sql_patch_11g.sql. Remove o SQL Patch do SQL_ID &&sql_id
-PROMPT -- +--- requer o privilegio DROP ANY SQL PATCH
-PROMPT SET ECHO ON
-PROMPT SPOOL &&arq_base._drop.out
-PROMPT BEGIN
-PROMPT   SYS.DBMS_SQLDIAG.DROP_SQL_PATCH(name => 'GUINA_PATCH_&&sql_id');
-PROMPT END;
-PROMPT /
-PROMPT SELECT COUNT(*) patches_restantes FROM dba_sql_patches WHERE name = 'GUINA_PATCH_&&sql_id';
-PROMPT SET ECHO OFF
-PROMPT SPOOL OFF
+SELECT txt
+  FROM (
+        SELECT   1 n, q'[-- +--- gerado por coe_sql_patch_11g.sql. Remove o SQL Patch do SQL_ID &&sql_id]' txt FROM dual UNION ALL
+        SELECT   2 n, q'[-- +--- requer o privilegio DROP ANY SQL PATCH]' txt FROM dual UNION ALL
+        SELECT   3 n, q'[SET ECHO ON]' txt FROM dual UNION ALL
+        SELECT   4 n, q'[SPOOL &&arq_base._drop.out]' txt FROM dual UNION ALL
+        SELECT   5 n, q'[BEGIN]' txt FROM dual UNION ALL
+        SELECT   6 n, q'[  SYS.DBMS_SQLDIAG.DROP_SQL_PATCH(name => 'GUINA_PATCH_&&sql_id');]' txt FROM dual UNION ALL
+        SELECT   7 n, q'[END;]' txt FROM dual UNION ALL
+        SELECT   8 n, q'[/]' txt FROM dual UNION ALL
+        SELECT   9 n, q'[SELECT COUNT(*) patches_restantes FROM dba_sql_patches WHERE name = 'GUINA_PATCH_&&sql_id';]' txt FROM dual UNION ALL
+        SELECT  10 n, q'[SET ECHO OFF]' txt FROM dual UNION ALL
+        SELECT  11 n, q'[SPOOL OFF]' txt FROM dual
+       )
+ ORDER BY n;
 SPOOL OFF
 
 SET TERMOUT     ON
