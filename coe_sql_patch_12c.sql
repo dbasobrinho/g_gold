@@ -9,9 +9,9 @@
 -- | Exemplo    : @coe_sql_patch_12c.sql                                                       |
 -- | Arquivo    : coe_sql_patch_12c.sql                                                        |
 -- | Referencia : Oracle Docs DBMS_SQLDIAG 19c (links completos abaixo)                        |
--- | Modificacao: 1.0 - 26/05/2020 - rfsobrinho - Versao inicial (tun_..._12_maior)            |
--- |              2.0 - 26/09/2026 - rfsobrinho - Padrao dbasobrinho, renomeado para coe_      |
--- |              2.1 - 26/09/2026 - rfsobrinho - Nao cria mais o patch: gera _create e _drop  |
+-- | Modificacao: 1.0 - 26/05/2020 - rfsobrinho - Versao inicial (tun_..._11_menor)            |
+-- |              2.0 - 26/06/2022 - rfsobrinho - Padrao dbasobrinho, renomeado para coe_      |
+-- |              2.1 - 26/09/2025 - rfsobrinho - Nao cria mais o patch: gera _create e _drop  |
 -- |              2.2 - 02/10/2026 - rfsobrinho - Corrige _create/_drop: PROMPT tirava o ';'   |
 -- +-------------------------------------------------------------------------------------------+
 -- |                                                                https://dbasobrinho.com.br |
@@ -198,7 +198,7 @@ SELECT txt
         SELECT  11 n, q'[SPOOL OFF]' txt FROM dual
        )
  ORDER BY n;
-SPOOL OFF
+SPOOL OFF 
 
 SET TERMOUT     ON
 SET FEEDBACK    ON

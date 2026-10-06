@@ -1,4 +1,4 @@
--- |
+-- | 
 -- +-------------------------------------------------------------------------------------------+
 -- | Objetivo   : Gera o SQL Patch de um SQL_ID (Oracle 11g e 12.1)                            |
 -- |              API interna DBMS_SQLDIAG_INTERNAL.I_CREATE_PATCH (sql_text)                  |
@@ -11,8 +11,8 @@
 -- | Arquivo    : coe_sql_patch_11g.sql                                                        |
 -- | Referencia : ORACLE-BASE SQL Repair Advisor 11g (links completos abaixo)                  |
 -- | Modificacao: 1.0 - 26/05/2020 - rfsobrinho - Versao inicial (tun_..._11_menor)            |
--- |              2.0 - 26/09/2026 - rfsobrinho - Padrao dbasobrinho, renomeado para coe_      |
--- |              2.1 - 26/09/2026 - rfsobrinho - Nao cria mais o patch: gera _create e _drop  |
+-- |              2.0 - 26/06/2022 - rfsobrinho - Padrao dbasobrinho, renomeado para coe_      |
+-- |              2.1 - 26/09/2025 - rfsobrinho - Nao cria mais o patch: gera _create e _drop  |
 -- |              2.2 - 02/10/2026 - rfsobrinho - Corrige _create/_drop: PROMPT tirava o ';'   |
 -- +-------------------------------------------------------------------------------------------+
 -- |                                                                https://dbasobrinho.com.br |
